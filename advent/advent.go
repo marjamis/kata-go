@@ -4,36 +4,29 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 )
 
-//Find the fuel required for a set of mass and divide by three, round down, and subtract 2.
-func day1CalculateFuel(mass ...int) int {
-	fuel := 0
-	for i := 0; i < len(mass); i++ {
-		fuel += (mass[i] / 3) - 2
-	}
+func day1(requireSubFuel bool, modules ...int) (totalFuel int) {
+	for _, module := range modules {
+		moduleFuel := (module / 3) - 2
 
-	return fuel
-}
-
-//Find the fuel required for a mass plus the mass of the additional fuel until the required fuel is 0 or blow.
-func day1CalculateFuel2(modules ...int) int {
-	totalFuel := day1CalculateFuel(modules...)
-	// fmt.Printf("Initial Fuel: %d\n", totalFuel)
-
-	NeedMoreFuel := true
-	additionalFuel := totalFuel
-	for NeedMoreFuel {
-		additionalFuel = day1CalculateFuel(additionalFuel)
-		// fmt.Printf("Total: %d - Additional: %d\n", totalFuel, additionalFuel)
-		if additionalFuel <= 0 {
-			NeedMoreFuel = false
-		} else {
-			totalFuel += additionalFuel
+		additionalFuel := moduleFuel
+		if requireSubFuel {
+			needMoreFuel := true
+			for needMoreFuel {
+				additionalFuel = (additionalFuel / 3) - 2
+				if additionalFuel <= 0 {
+					needMoreFuel = false
+				} else {
+					totalFuel += additionalFuel
+				}
+			}
 		}
-	}
 
-	return totalFuel
+		totalFuel += moduleFuel
+	}
+	return
 }
 
 func day2(v ...int) []int {
@@ -50,7 +43,6 @@ func day2(v ...int) []int {
 			position = position + 4
 		case 99:
 			//End of app
-			//TODO break out of loop properly
 			return v
 		default:
 			return nil
@@ -60,19 +52,24 @@ func day2(v ...int) []int {
 	return nil
 }
 
-var (
-	constCentralPoint = coordinates{
-		X: 15000,
-		Y: 15000,
-	}
-)
-
 type coordinates struct {
 	X int
 	Y int
 }
 
-var clashes []*coordinates
+type clash struct {
+	coordinates coordinates
+	stepsWire1  int
+	stepsWire2  int
+}
+
+var (
+	constCentralPoint = coordinates{
+		X: 15000,
+		Y: 15000,
+	}
+	clashes []*coordinates
+)
 
 func day3Direction(flag int, instruction string, grid *[30000][30000]int, x int, y int) (int, int) {
 	direction := string(instruction[0])
@@ -86,8 +83,8 @@ func day3Direction(flag int, instruction string, grid *[30000][30000]int, x int,
 	case "U":
 		// fmt.Println("Up")
 		for i := 0; i < steps; i++ {
-			//TODO note about this being -1
 			//TODO dedup this as it's essentially the same just with different x or y calculations
+			//Note: This is -1 as it's go up the array which is minusing of rows
 			y = y - 1
 			if grid[x][y] == 1 && flag == 2 {
 				grid[x][y] = 3
@@ -99,6 +96,7 @@ func day3Direction(flag int, instruction string, grid *[30000][30000]int, x int,
 	case "D":
 		// fmt.Println("Down")
 		for i := 0; i < steps; i++ {
+			//Note: This is +1 as it's go down the array which is plussing of rows
 			y = y + 1
 			if grid[x][y] == 1 && flag == 2 {
 				grid[x][y] = 3
@@ -134,7 +132,21 @@ func day3Direction(flag int, instruction string, grid *[30000][30000]int, x int,
 	return x, y
 }
 
-func day3(wire1 []string, wire2 []string) int {
+func day3Manhattan() int {
+	var num []int
+	for _, clash := range clashes {
+		num = append(num, abs(clash.X-constCentralPoint.X)+abs(clash.Y-constCentralPoint.Y))
+	}
+	sort.Ints(num)
+
+	return num[0]
+}
+
+func day3Steps() int {
+	return 1
+}
+
+func day3(wire1 []string, wire2 []string, f func() int) int {
 	//TODO devise a better strat than the 30000
 	grid := [30000][30000]int{}
 	//Central Point set
@@ -142,7 +154,7 @@ func day3(wire1 []string, wire2 []string) int {
 	//Resetting this TODO maybe a better way
 	clashes = nil
 
-	//TODO add reasoning as to why this was used
+	//Note: Used a closure as didnt need to be it's own function and looks cool
 	mapWires := func(flag int, wire []string) {
 		x := constCentralPoint.X
 		y := constCentralPoint.Y
@@ -155,13 +167,9 @@ func day3(wire1 []string, wire2 []string) int {
 	mapWires(1, wire1)
 	mapWires(2, wire2)
 
-	var num []int
-	for _, clash := range clashes {
-		num = append(num, abs(clash.X-constCentralPoint.X)+abs(clash.Y-constCentralPoint.Y))
-	}
-	sort.Ints(num)
+	num := f()
 
-	return num[0]
+	return num
 }
 
 //abs is simple function to return the absolute value of an integer. Absolute value being essentially an always positive number.
@@ -170,4 +178,75 @@ func abs(x int) int {
 		return -x
 	}
 	return x
+}
+
+func day4Rules1(num int) bool {
+	snum := strconv.Itoa(num)
+
+	hasSameAdjacent := false
+	isAscending := true
+	for i := 0; i < len(snum)-1; i++ {
+		if snum[i] > snum[i+1] {
+			isAscending = false
+			i = len(snum)
+			break
+		}
+
+		if snum[i] == snum[i+1] {
+			hasSameAdjacent = true
+		}
+	}
+
+	return hasSameAdjacent && isAscending
+}
+
+func day4Rules2(num int) bool {
+	snum := strconv.Itoa(num)
+
+	hasSameAdjacent := false
+	isAscending := true
+	for i := 0; i < len(snum)-1; i++ {
+		if snum[i] > snum[i+1] {
+			isAscending = false
+			i = len(snum)
+			break
+		}
+
+		if snum[i] == snum[i+1] {
+			count := 0
+			jk := i + 2
+			for j := i + 2; j < len(snum); j++ {
+				if snum[i] == snum[j] {
+					count++
+					jk++
+				} else {
+					j = len(snum)
+					jk = j
+				}
+			}
+
+			if count%2 == 0 {
+				hasSameAdjacent = true
+			} else {
+				i = jk
+			}
+		}
+	}
+
+	return hasSameAdjacent && isAscending
+}
+
+func day4(rng string, f func(int) bool) int {
+	r := strings.Split(rng, "-")
+	start, _ := strconv.Atoi(r[0])
+	end, _ := strconv.Atoi(r[1])
+
+	matches := 0
+	for i := start; i <= end; i++ {
+		if f(i) {
+			matches++
+		}
+	}
+
+	return matches
 }

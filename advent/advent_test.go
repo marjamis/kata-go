@@ -13,7 +13,7 @@ import (
 )
 
 func TestDay1(t *testing.T) {
-	// t.Skip()
+	t.Skip()
 	assert := assert.New(t)
 
 	fdata, _ := os.Open("./day1Data.txt")
@@ -28,26 +28,26 @@ func TestDay1(t *testing.T) {
 
 	//Part 1 - https://adventofcode.com/2019/day/1
 	//Provided Tests
-	assert.Equal(2, day1CalculateFuel(12))
-	assert.Equal(2, day1CalculateFuel(14))
-	assert.Equal(654, day1CalculateFuel(1969))
-	assert.Equal(33583, day1CalculateFuel(100756))
+	assert.Equal(2, day1(false, 12))
+	assert.Equal(2, day1(false, 14))
+	assert.Equal(654, day1(false, 1969))
+	assert.Equal(33583, day1(false, 100756))
 
 	//Verified Solution
-	formatting.AdventWrapper("1", "1", day1CalculateFuel(ints...))
+	formatting.AdventWrapper("1", "1", day1(false, ints...))
 
 	//Part 2 - https://adventofcode.com/2019/day/1#part2
 	//Provided Tests
-	assert.Equal(2, day1CalculateFuel2(14))
-	assert.Equal(966, day1CalculateFuel2(1969))
-	assert.Equal(50346, day1CalculateFuel2(100756))
-
-	//Verified Solution
-	formatting.AdventWrapper("1", "2", day1CalculateFuel2(ints...))
+	assert.Equal(2, day1(true, 14))
+	assert.Equal(966, day1(true, 1969))
+	assert.Equal(50346, day1(true, 100756))
+	//
+	// //Verified Solution
+	formatting.AdventWrapper("1", "2", day1(true, ints...))
 }
 
 func TestDay2(t *testing.T) {
-	// t.Skip()
+	t.Skip()
 	assert := assert.New(t)
 
 	fn := "./day2Data.csv"
@@ -123,10 +123,37 @@ func TestDay3(t *testing.T) {
 
 	//Part 1 - https://adventofcode.com/2019/day/3
 	//Provided Tests
-	assert.Equal(6, day3([]string{"R8", "U5", "L5", "D3"}, []string{"U7", "R6", "D4", "L4"}))
-	assert.Equal(159, day3([]string{"R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72"}, []string{"U62", "R66", "U55", "R34", "D71", "R55", "D58", "R83"}))
-	assert.Equal(135, day3([]string{"R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R51"}, []string{"U98", "R91", "D20", "R16", "D67", "R40", "U7", "R15", "U6", "R7"}))
+	assert.Equal(6, day3([]string{"R8", "U5", "L5", "D3"}, []string{"U7", "R6", "D4", "L4"}, day3Manhattan))
+	assert.Equal(159, day3([]string{"R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72"}, []string{"U62", "R66", "U55", "R34", "D71", "R55", "D58", "R83"}, day3Manhattan))
+	assert.Equal(135, day3([]string{"R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R51"}, []string{"U98", "R91", "D20", "R16", "D67", "R40", "U7", "R15", "U6", "R7"}, day3Manhattan))
+	//
+	// //Verified Solution
+	formatting.AdventWrapper("3", "1", day3(strings[0], strings[1], day3Manhattan))
+
+	//Part 2 - https://adventofcode.com/2019/day/3
+	//Provided Tests
+	assert.Equal(610, day3([]string{"R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72"}, []string{"U62", "R66", "U55", "R34", "D71", "R55", "D58", "R83"}, day3Steps))
 
 	//Verified Solution
-	formatting.AdventWrapper("3", "1", day3(strings[0], strings[1]))
+	formatting.AdventWrapper("3", "1", day3(strings[0], strings[1], day3Manhattan))
+}
+
+func TestDay4(t *testing.T) {
+	t.Skip()
+	assert := assert.New(t)
+
+	//Part 1 - https://adventofcode.com/2019/day/4
+	//My tests to build it up
+	assert.Equal(9, day4("10-100", day4Rules1))
+
+	//Verified Solution
+	formatting.AdventWrapper("4", "1", day4("353096-843212", day4Rules1))
+
+	//Part 2 - https://adventofcode.com/2019/day/4
+	//My tests to build it up
+	assert.Equal(26, day4("10-200", day4Rules2))
+	assert.Equal(1, day4("353096-843212", day4Rules2))
+
+	//Verified Solution
+	formatting.AdventWrapper("4", "2", day4("353096-843212", day4Rules2))
 }

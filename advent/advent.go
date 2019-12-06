@@ -60,21 +60,19 @@ func day2(v ...int) []int {
 	return nil
 }
 
-const (
-	ConstCentralPointX = 15000
-	ConstCentralPointY = 15000
+var (
+	constCentralPoint = coordinates{
+		X: 15000,
+		Y: 15000,
+	}
 )
-
-func day3UpdatePoint() {
-
-}
 
 type coordinates struct {
 	X int
 	Y int
 }
 
-var track []*coordinates
+var clashes []*coordinates
 
 func day3Direction(flag int, instruction string, grid *[30000][30000]int, x int, y int) (int, int) {
 	direction := string(instruction[0])
@@ -83,47 +81,50 @@ func day3Direction(flag int, instruction string, grid *[30000][30000]int, x int,
 		fmt.Println(err)
 	}
 
-	fmt.Printf("Steps to move: %d\n", steps)
+	// fmt.Printf("Steps to move: %d\n", steps)
 	switch direction {
 	case "U":
-		fmt.Println("Up")
+		// fmt.Println("Up")
 		for i := 0; i < steps; i++ {
 			//TODO note about this being -1
 			//TODO dedup this as it's essentially the same just with different x or y calculations
 			y = y - 1
 			if grid[x][y] == 1 && flag == 2 {
 				grid[x][y] = 3
-				track = append(track, &coordinates{x, y})
+				clashes = append(clashes, &coordinates{x, y})
 			} else {
 				grid[x][y] = flag
 			}
 		}
 	case "D":
-		fmt.Println("Down")
+		// fmt.Println("Down")
 		for i := 0; i < steps; i++ {
 			y = y + 1
 			if grid[x][y] == 1 && flag == 2 {
 				grid[x][y] = 3
+				clashes = append(clashes, &coordinates{x, y})
 			} else {
 				grid[x][y] = flag
 			}
 		}
 	case "L":
-		fmt.Println("Left")
+		// fmt.Println("Left")
 		for i := 0; i < steps; i++ {
 			x = x - 1
 			if grid[x][y] == 1 && flag == 2 {
 				grid[x][y] = 3
+				clashes = append(clashes, &coordinates{x, y})
 			} else {
 				grid[x][y] = flag
 			}
 		}
 	case "R":
-		fmt.Println("Right")
+		// fmt.Println("Right")
 		for i := 0; i < steps; i++ {
 			x = x + 1
 			if grid[x][y] == 1 && flag == 2 {
 				grid[x][y] = 3
+				clashes = append(clashes, &coordinates{x, y})
 			} else {
 				grid[x][y] = flag
 			}
@@ -134,17 +135,20 @@ func day3Direction(flag int, instruction string, grid *[30000][30000]int, x int,
 }
 
 func day3(wire1 []string, wire2 []string) int {
+	//TODO devise a better strat than the 30000
 	grid := [30000][30000]int{}
 	//Central Point set
-	grid[ConstCentralPointX][ConstCentralPointY] = -1
+	grid[constCentralPoint.X][constCentralPoint.Y] = -1
+	//Resetting this TODO maybe a better way
+	clashes = nil
 
 	//TODO add reasoning as to why this was used
-	mapWires := func(label int, wire []string) {
-		x := ConstCentralPointX
-		y := ConstCentralPointY
+	mapWires := func(flag int, wire []string) {
+		x := constCentralPoint.X
+		y := constCentralPoint.Y
 		for i := range wire {
-			fmt.Printf("Wire %d - X: %d Y: %d\n", label, x, y)
-			x, y = day3Direction(label, wire[i], &grid, x, y)
+			// fmt.Printf("Wire %d - X: %d Y: %d\n", label, x, y)
+			x, y = day3Direction(flag, wire[i], &grid, x, y)
 		}
 	}
 
@@ -152,8 +156,8 @@ func day3(wire1 []string, wire2 []string) int {
 	mapWires(2, wire2)
 
 	var num []int
-	for _, coord := range track {
-		num = append(num, abs(coord.X-ConstCentralPointX)+abs(coord.Y-ConstCentralPointY))
+	for _, clash := range clashes {
+		num = append(num, abs(clash.X-constCentralPoint.X)+abs(clash.Y-constCentralPoint.Y))
 	}
 	sort.Ints(num)
 

@@ -3,17 +3,17 @@ package advent
 import (
 	"bufio"
 	"encoding/csv"
-	"fmt"
 	"io"
 	"os"
 	"strconv"
 	"testing"
 
+	"github.com/marjamis/kata-go/pkg/formatting"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDay1(t *testing.T) {
-	t.Skip()
+	// t.Skip()
 	assert := assert.New(t)
 
 	fdata, _ := os.Open("./day1Data.txt")
@@ -34,7 +34,7 @@ func TestDay1(t *testing.T) {
 	assert.Equal(33583, day1CalculateFuel(100756))
 
 	//Verified Solution
-	fmt.Println(day1CalculateFuel(ints...))
+	formatting.AdventWrapper("1", "1", day1CalculateFuel(ints...))
 
 	//Part 2 - https://adventofcode.com/2019/day/1#part2
 	//Provided Tests
@@ -43,11 +43,11 @@ func TestDay1(t *testing.T) {
 	assert.Equal(50346, day1CalculateFuel2(100756))
 
 	//Verified Solution
-	fmt.Println(day1CalculateFuel2(ints...))
+	formatting.AdventWrapper("1", "2", day1CalculateFuel2(ints...))
 }
 
 func TestDay2(t *testing.T) {
-	t.Skip()
+	// t.Skip()
 	assert := assert.New(t)
 
 	fn := "./day2Data.csv"
@@ -77,10 +77,12 @@ func TestDay2(t *testing.T) {
 	ints[1] = 12
 	ints[2] = 2
 
-	//Verified Solution
+	//Create a copy of the data to be used for future iterations
 	fresh := make([]int, len(ints))
 	copy(fresh, ints)
-	fmt.Println(day2(fresh...))
+
+	//Verified Solution
+	formatting.AdventWrapper("2", "1", day2(fresh...)[0])
 
 	ints[1] = 0
 	ints[2] = 0
@@ -90,11 +92,9 @@ func TestDay2(t *testing.T) {
 			copy(fresh, ints)
 			fresh[1] = i
 			fresh[2] = j
-			// fmt.Println(fresh)
-			// fmt.Println(r)
 			if day2(fresh...)[0] == 19690720 {
 				//Verified Solution
-				fmt.Printf("%d\n", 100*i+j)
+				formatting.AdventWrapper("2", "2", 100*i+j)
 			}
 		}
 	}
@@ -102,7 +102,7 @@ func TestDay2(t *testing.T) {
 
 func TestDay3(t *testing.T) {
 	// t.Skip()
-	// assert := assert.New(t)
+	assert := assert.New(t)
 
 	fn := "./day3Data.csv"
 	// t.FileExists(fn)
@@ -118,13 +118,15 @@ func TestDay3(t *testing.T) {
 		for i := range record {
 			content = append(content, record[i])
 		}
-		fmt.Println(content)
 		strings = append(strings, content)
 	}
 
-	// assert.Equal(6, day3([]string{"R8", "U5", "L5", "D3"}, []string{"U7", "R6", "D4", "L4"}))
-	// assert.Equal(159, day3([]string{"R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72"}, []string{"U62", "R66", "U55", "R34", "D71", "R55", "D58", "R83"}))
-	// assert.Equal(135, day3([]string{"R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R51"}, []string{"U98", "R91", "D20", "R16", "D67", "R40", "U7", "R15", "U6", "R7"}))
+	//Part 1 - https://adventofcode.com/2019/day/3
+	//Provided Tests
+	assert.Equal(6, day3([]string{"R8", "U5", "L5", "D3"}, []string{"U7", "R6", "D4", "L4"}))
+	assert.Equal(159, day3([]string{"R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72"}, []string{"U62", "R66", "U55", "R34", "D71", "R55", "D58", "R83"}))
+	assert.Equal(135, day3([]string{"R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R51"}, []string{"U98", "R91", "D20", "R16", "D67", "R40", "U7", "R15", "U6", "R7"}))
 
-	fmt.Printf("Solution is: %d\n", day3(strings[0], strings[1]))
+	//Verified Solution
+	formatting.AdventWrapper("3", "1", day3(strings[0], strings[1]))
 }

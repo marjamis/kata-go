@@ -188,7 +188,6 @@ func day4Rules1(num int) bool {
 	for i := 0; i < len(snum)-1; i++ {
 		if snum[i] > snum[i+1] {
 			isAscending = false
-			i = len(snum)
 			break
 		}
 
@@ -208,29 +207,23 @@ func day4Rules2(num int) bool {
 	for i := 0; i < len(snum)-1; i++ {
 		if snum[i] > snum[i+1] {
 			isAscending = false
-			i = len(snum)
 			break
 		}
 
 		if snum[i] == snum[i+1] {
-			count := 0
-			jk := i + 2
-			for j := i + 2; j < len(snum); j++ {
-				if snum[i] == snum[j] {
-					count++
-					jk++
+			if i+2 < len(snum) {
+				if snum[i+2] != snum[i] {
+					hasSameAdjacent = true
 				} else {
-					j = len(snum)
-					jk = j
+					hasSameAdjacent = false
 				}
 			}
-
-			if count%2 == 0 {
-				hasSameAdjacent = true
-			} else {
-				i = jk
-			}
 		}
+
+	}
+
+	if hasSameAdjacent && isAscending {
+		fmt.Println(num)
 	}
 
 	return hasSameAdjacent && isAscending
@@ -249,4 +242,64 @@ func day4(rng string, f func(int) bool) int {
 	}
 
 	return matches
+}
+
+func day5OpcodeBreak(data int) (int, int, int, int) {
+	opcode := (data % 10) + ((data / 10 % 10) * 10)
+	p1 := data / 100 % 10
+	p2 := data / 1000 % 10
+	p3 := data / 10000 % 10
+
+	return opcode, p1, p2, p3
+}
+
+func day5(systemId string, v ...int) []int {
+	position := 0
+
+	modeSelector := func(position int, p1 int, p2 int) (x int, y int) {
+		if p1 == 0 {
+			x = v[v[position+1]]
+		} else {
+			x = v[position+1]
+		}
+
+		if p2 == 0 {
+			y = v[v[position+2]]
+		} else {
+			y = v[position+2]
+		}
+
+		return
+	}
+
+	for true {
+		opcode, p1, p2, _ := day5OpcodeBreak(v[position])
+		switch opcode {
+		case 1:
+			//Addition
+			x, y := modeSelector(position, p1, p2)
+			v[v[position+3]] = x + y
+			position = position + 4
+		case 2:
+			//Multiplication
+			x, y := modeSelector(position, p1, p2)
+			v[v[position+3]] = x * y
+			position = position + 4
+		case 3:
+			//Input from parameter
+			systemIdI, _ := strconv.Atoi(systemId)
+			v[v[position+1]] = systemIdI
+			position = position + 2
+		case 4:
+			fmt.Println(v[v[position+1]])
+			position = position + 2
+		case 99:
+			//End of app
+			return v
+		default:
+			return nil
+		}
+	}
+
+	return nil
 }

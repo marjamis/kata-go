@@ -253,8 +253,9 @@ func day5OpcodeBreak(data int) (int, int, int, int) {
 	return opcode, p1, p2, p3
 }
 
-func day5(systemId string, v ...int) []int {
+func day5(systemId string, v ...int) ([]int, int) {
 	position := 0
+	output := 0
 
 	modeSelector := func(position int, p1 int, p2 int) (x int, y int) {
 		if p1 == 0 {
@@ -263,10 +264,12 @@ func day5(systemId string, v ...int) []int {
 			x = v[position+1]
 		}
 
-		if p2 == 0 {
-			y = v[v[position+2]]
-		} else {
-			y = v[position+2]
+		if p2 != -1 {
+			if p2 == 0 {
+				y = v[v[position+2]]
+			} else {
+				y = v[position+2]
+			}
 		}
 
 		return
@@ -279,27 +282,184 @@ func day5(systemId string, v ...int) []int {
 			//Addition
 			x, y := modeSelector(position, p1, p2)
 			v[v[position+3]] = x + y
-			position = position + 4
+			position += 4
 		case 2:
 			//Multiplication
 			x, y := modeSelector(position, p1, p2)
 			v[v[position+3]] = x * y
-			position = position + 4
+			position += 4
 		case 3:
-			//Input from parameter
+			//Input for a parameter
 			systemIdI, _ := strconv.Atoi(systemId)
 			v[v[position+1]] = systemIdI
-			position = position + 2
+			position += 2
 		case 4:
-			fmt.Println(v[v[position+1]])
-			position = position + 2
+			//Output value of parameter
+			x, _ := modeSelector(position, p1, -1)
+			fmt.Printf("%d, ", x)
+			output = x
+			position += 2
+		case 5:
+			//jump-if-true
+			x, y := modeSelector(position, p1, p2)
+			if x != 0 {
+				//TODO check if this is the value itself or a pointer to the vlaue
+				position = y
+			} else {
+				position += 3
+			}
+		case 6:
+			//jump-if-false
+			x, y := modeSelector(position, p1, p2)
+			if x == 0 {
+				//TODO check if this is the value itself or a pointer to the vlaue
+				position = y
+			} else {
+				position += 3
+			}
+		case 7:
+			//less than
+			x, y := modeSelector(position, p1, p2)
+			if x < y {
+				v[v[position+3]] = 1
+			} else {
+				v[v[position+3]] = 0
+			}
+			position += 4
+		case 8:
+			//equals
+			x, y := modeSelector(position, p1, p2)
+			if x == y {
+				v[v[position+3]] = 1
+			} else {
+				v[v[position+3]] = 0
+			}
+			position += 4
 		case 99:
 			//End of app
-			return v
+			return v, output
 		default:
-			return nil
+			return nil, 0
+		}
+	}
+
+	return nil, 0
+}
+
+type orbitPoint struct {
+	Name       string
+	Orbits     *orbitPoint
+	OrbittedBy orbitPoints
+}
+
+type orbitPoints []*orbitPoint
+
+func findNode(op *orbitPoint, find string) *orbitPoint {
+	if op.Name == find {
+		return op
+	}
+
+	for _, p := range op.OrbittedBy {
+		if res := findNode(p, find); res != nil && res.Name == find {
+			return res
 		}
 	}
 
 	return nil
+}
+
+//As I used findNode multiple times over multiple iterations this is a separate function.
+func traverse(op *orbitPoint, count int) (*orbitPoint, int) {
+	tmp := 0
+	for _, p := range op.OrbittedBy {
+		_, val := traverse(p, count+1)
+		tmp += val
+	}
+
+	return op, count + tmp
+}
+
+func iteration(uom *orbitPoint, mapItems []string) (missing []string) {
+	for _, mapItem := range mapItems {
+		mapPoint := strings.Split(mapItem, ")")
+		// fmt.Printf("Initial - Given Parent: %s Orbitter: %s / ", mapPoint[0], mapPoint[1])
+		parent := findNode(uom, mapPoint[0])
+		if parent != nil {
+			new := &orbitPoint{
+				mapPoint[1],
+				parent,
+				nil,
+			}
+			parent.OrbittedBy = append(parent.OrbittedBy, new)
+			// fmt.Printf("Result - Returned Parent: %s Orbiter %s\n", parent.Name, new.Name)
+		} else {
+			missing = append(missing, mapItem)
+		}
+	}
+	return
+}
+
+func getPathFromEndNode(op *orbitPoint) []string {
+	pointer := op.Orbits
+	var opa []string
+	for pointer != nil {
+		opa = append(opa, pointer.Name)
+		pointer = pointer.Orbits
+	}
+
+	last := len(opa) - 1
+	for i := 0; i < len(opa)/2; i++ {
+		opa[i], opa[last-i] = opa[last-i], opa[i]
+	}
+
+	return opa
+}
+
+func day6(mapItems []string) int {
+	//Universal Orbit Map
+	uom := &orbitPoint{
+		"COM",
+		nil,
+		nil,
+	}
+
+	//Rather than devising some sort of pre-sorting I basically just go over it multiple times to ensure any misses on the first round get picked up on later rounds. I'm sure there is a more efficient way but my sort and other tests didn't really work so...
+	for len(mapItems) > 0 {
+		mapItems = iteration(uom, mapItems)
+	}
+
+	_, count := traverse(uom, 0)
+	return count
+}
+
+func day6Part2(mapItems []string) int {
+	//Universal Orbit Map
+	uom := &orbitPoint{
+		"COM",
+		nil,
+		nil,
+	}
+
+	//Rather than devising some sort of pre-sorting I basically just go over it multiple times to ensure any misses on the first round get picked up on later rounds. I'm sure there is a more efficient way but my sort and other tests didn't really work so...
+	for len(mapItems) > 0 {
+		mapItems = iteration(uom, mapItems)
+	}
+
+	san := getPathFromEndNode(findNode(uom, "SAN"))
+	you := getPathFromEndNode(findNode(uom, "YOU"))
+
+	i := 0
+	countOfSame := 0
+	for true {
+		if i < len(you) && i < len(san) {
+			if you[i] == san[i] {
+				countOfSame++
+			}
+		} else {
+			break
+		}
+		i++
+	}
+
+	return (len(you) - countOfSame) + (len(san) - countOfSame)
 }

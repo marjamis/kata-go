@@ -3,6 +3,7 @@ package advent
 import (
 	"bufio"
 	"encoding/csv"
+	"fmt"
 	"io"
 	"os"
 	"strconv"
@@ -144,10 +145,10 @@ func TestDay4(t *testing.T) {
 
 	//Part 1 - https://adventofcode.com/2019/day/4
 	//My tests to build it up
-	// assert.Equal(9, day4("10-100", day4Rules1))
+	assert.Equal(9, day4("10-100", day4Rules1))
 	//
 	// //Verified Solution
-	// formatting.AdventWrapperInt("4", "1", day4("353096-843212", day4Rules1))
+	formatting.AdventWrapperInt("4", "1", day4("353096-843212", day4Rules1))
 
 	//Part 2 - https://adventofcode.com/2019/day/4
 	//My tests to build it up
@@ -158,7 +159,7 @@ func TestDay4(t *testing.T) {
 }
 
 func TestDay5(t *testing.T) {
-	// t.Skip()
+	t.Skip()
 	assert := assert.New(t)
 
 	fn := "./day5Data.csv"
@@ -172,6 +173,9 @@ func TestDay5(t *testing.T) {
 		ints = append(ints, d)
 	}
 
+	p2Ints := make([]int, len(ints))
+	copy(p2Ints, ints)
+
 	//Part 1 - https://adventofcode.com/2019/day/5
 	//My tests to build it up
 	opcode, p1, p2, p3 := day5OpcodeBreak(1102)
@@ -180,19 +184,173 @@ func TestDay5(t *testing.T) {
 	assert.Equal(1, p2)
 	assert.Equal(0, p3)
 
-	//Tests from day2 to ensure thigns still worked
-	assert.ElementsMatch([]int{2, 5, 6, 28, 99, 4, 7}, day5("1", 2, 5, 6, 3, 99, 4, 7))
-	assert.ElementsMatch([]int{1, 5, 6, 11, 99, 4, 7}, day5("1", 1, 5, 6, 3, 99, 4, 7))
-	assert.ElementsMatch([]int{1, 9, 10, 28, 2, 9, 10, 3, 99, 4, 7}, day5("1", 1, 9, 10, 3, 2, 9, 10, 3, 99, 4, 7))
-	//Provided Tests
-	assert.ElementsMatch([]int{2, 0, 0, 0, 99}, day5("1", 1, 0, 0, 0, 99))
-	assert.ElementsMatch([]int{2, 3, 0, 6, 99}, day5("1", 2, 3, 0, 3, 99))
-	assert.ElementsMatch([]int{2, 4, 4, 5, 99, 9801}, day5("1", 2, 4, 4, 5, 99, 0))
-	assert.ElementsMatch([]int{30, 1, 1, 4, 2, 5, 6, 0, 99}, day5("1", 1, 1, 1, 4, 99, 5, 6, 0, 99))
-	assert.ElementsMatch([]int{3500, 9, 10, 70, 2, 3, 11, 0, 99, 30, 40, 50}, day5("1", 1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50))
+	//conver to tdd
+	var output int
+
+	var day5Tests = []struct {
+		code        string
+		input       []int
+		resultArray []int
+	}{
+		{
+			"1",
+			[]int{2, 5, 6, 3, 99, 4, 7},
+			[]int{2, 5, 6, 28, 99, 4, 7},
+		},
+		{
+			"1",
+			[]int{1, 5, 6, 3, 99, 4, 7},
+			[]int{1, 5, 6, 11, 99, 4, 7},
+		},
+		{
+			"1",
+			[]int{1, 9, 10, 3, 2, 9, 10, 3, 99, 4, 7},
+			[]int{1, 9, 10, 28, 2, 9, 10, 3, 99, 4, 7},
+		},
+		{
+			"1",
+			[]int{2, 3, 0, 3, 99},
+			[]int{2, 3, 0, 6, 99},
+		},
+		{
+			"1",
+			[]int{2, 4, 4, 5, 99, 0},
+			[]int{2, 4, 4, 5, 99, 9801},
+		},
+		{
+			"1",
+			[]int{1, 1, 1, 4, 99, 5, 6, 0, 99},
+			[]int{30, 1, 1, 4, 2, 5, 6, 0, 99},
+		},
+		{
+			"1",
+			[]int{1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50},
+			[]int{3500, 9, 10, 70, 2, 3, 11, 0, 99, 30, 40, 50},
+		},
+		//Part 2 tests
+
+	}
+
+	for _, test := range day5Tests {
+		responseArray, _ := day5(test.code, test.input...)
+		assert.ElementsMatch(test.resultArray, responseArray)
+	}
 
 	//Verified Solution
 	formatting.AdventWrapper("5", "1")
 	day5("1", ints...)
+	fmt.Println()
 
+	var day5TestsP2 = []struct {
+		code       string
+		input      []int
+		resultCode int
+	}{
+		{
+			"8",
+			[]int{3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8},
+			1,
+		},
+		{
+			"7",
+			[]int{3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8},
+			0,
+		},
+		{
+			"7",
+			[]int{3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8, 8},
+			1,
+		},
+		{
+			"8",
+			[]int{3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8, 8},
+			0,
+		},
+		{
+			"7",
+			[]int{3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99},
+			999,
+		},
+		{
+			"8",
+			[]int{3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99},
+			1000,
+		},
+		{
+			"9",
+			[]int{3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99},
+			1001,
+		},
+	}
+
+	for _, test := range day5TestsP2 {
+		_, code := day5(test.code, test.input...)
+		assert.Equal(test.resultCode, code)
+	}
+
+	//Verified Solution
+	fmt.Printf("\n")
+	_, output = day5("5", p2Ints...)
+	fmt.Printf("\n")
+	formatting.AdventWrapperInt("5", "2", output)
+}
+
+func TestDay6(t *testing.T) {
+	t.Skip()
+	assert := assert.New(t)
+
+	fdata, _ := os.Open("./day6Data.txt")
+	defer fdata.Close()
+	scanner := bufio.NewScanner(fdata)
+	scanner.Split(bufio.ScanLines)
+	var strings []string
+	for scanner.Scan() {
+		strings = append(strings, scanner.Text())
+	}
+
+	var day6Part1Tests = []struct {
+		orbits        []string
+		countOfOrbits int
+	}{
+		//Provided Tests
+		{
+			[]string{"COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L"},
+			42,
+		},
+		//Personal Tests
+		{
+			[]string{"E)J", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "J)K", "COM)B", "B)C", "K)L"},
+			42,
+		},
+	}
+
+	for _, test := range day6Part1Tests {
+		assert.Equal(test.countOfOrbits, day6(test.orbits))
+	}
+
+	//Verified Solution
+	formatting.AdventWrapperInt("6", "1", day6(strings))
+
+	var day6Part2Tests = []struct {
+		orbits        []string
+		countOfOrbits int
+	}{
+		//Provided Tests
+		{
+			[]string{"COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L", "K)YOU", "I)SAN"},
+			4,
+		},
+		//Personal Tests
+		{
+			[]string{"E)J", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "J)K", "COM)B", "B)C", "K)L", "K)YOU", "I)SAN"},
+			4,
+		},
+	}
+
+	for _, test := range day6Part2Tests {
+		assert.Equal(test.countOfOrbits, day6Part2(test.orbits))
+	}
+
+	//Verified Solution
+	formatting.AdventWrapperInt("6", "2", day6Part2(strings))
 }

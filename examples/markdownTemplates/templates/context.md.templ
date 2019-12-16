@@ -1,0 +1,6 @@
+{{define "context"}}
+### Printing out the supplied context
+{{range $val := . -}}
+  Value: {{- $val}}
+{{end}}
+{{end}}

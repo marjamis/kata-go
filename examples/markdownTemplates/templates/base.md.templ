@@ -1,0 +1,22 @@
+/md
+## {{ .Name | toLower }} --- {{ .Name | toUpper }}
+
+### Normal Table
+{{ .Table -}}
+
+{{ $length := len .Objects }} {{ if eq $length 0 }}
+_There are 0 tickets in the .Objects object_
+{{end}}
+
+{{/* Calling a specific template as it's a once of with a unique key but I can also define a name in the template file */}}
+{{- template "stats.md.templ" . -}}
+
+{{/* Using block so the template "content" can be dynamically assigned depending on the template files parsed */}}
+{{- block "content" . -}} {{- end -}}
+
+{{/* While using the same template Im passing in different objects for the context with which that template is actioned. Meaning a single template can be used as a function for "code" reuse. */}}
+{{- block "context" .Objects -}} {{- end -}}
+{{- block "context" .OuterLoop -}} {{- end -}}
+
+Remember to work in order.
+{{.Footer -}}

@@ -1,0 +1,6 @@
+### Stats Table
+{{ .Stats }}
+
+{{range $val := .OuterLoop -}}
+  Number: {{- $val}}
+{{end}}

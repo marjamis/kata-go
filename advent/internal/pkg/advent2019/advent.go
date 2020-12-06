@@ -1,4 +1,4 @@
-package advent
+package advent2019
 
 import (
 	"fmt"
@@ -303,7 +303,6 @@ func day5(systemId string, v ...int) ([]int, int) {
 			//jump-if-true
 			x, y := modeSelector(position, p1, p2)
 			if x != 0 {
-				//TODO check if this is the value itself or a pointer to the vlaue
 				position = y
 			} else {
 				position += 3
@@ -312,7 +311,6 @@ func day5(systemId string, v ...int) ([]int, int) {
 			//jump-if-false
 			x, y := modeSelector(position, p1, p2)
 			if x == 0 {
-				//TODO check if this is the value itself or a pointer to the vlaue
 				position = y
 			} else {
 				position += 3

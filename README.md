@@ -1,2 +1,4 @@
 # kata-go
-Used for testing of components of go to get myself into the habit of using go for smaller things and not just when I have a project idea and forcing new ides into it. Also useful for storing samples of common concepts in go.
+Used for testing of common concepts of go to get myself into the habit of using go for smaller tests and not just when I have a larger project idea.
+
+Also useful for storing these sample common concepts which I can revisit when I forget syntax or other similar things.

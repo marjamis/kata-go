@@ -62,3 +62,17 @@ func ReadArrayDataFromFile(file string) (strings [][]string) {
 
 	return
 }
+
+func RemoveDuplicates(data []string) (uniques []string) {
+	present := map[string]bool{}
+
+	for _, d := range data {
+		_, ok := present[d]
+		if !ok {
+			uniques = append(uniques, d)
+			present[d] = true
+		}
+	}
+
+	return uniques
+}

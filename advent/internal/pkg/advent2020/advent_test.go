@@ -34,19 +34,19 @@ func TestDay2(t *testing.T) {
 		"2-9 c: ccccccccc",
 	}
 
-	var tests = []struct {
+	tests := []struct {
 		testName string
-		check    string
+		check    Day2CheckOption
 		expected int
 	}{
 		{
 			"Day 2 Test",
-			"general",
+			Day2CheckOptionGeneral,
 			2,
 		},
 		{
 			"Day 2 Part 2 Test",
-			"special",
+			Day2CheckOptionSpecial,
 			1,
 		},
 	}
@@ -60,7 +60,7 @@ func TestDay2(t *testing.T) {
 
 func TestDay3(t *testing.T) {
 	t.Skip()
-	var mapp = [][]string{
+	var tobMap = [][]string{
 		{".", ".", "#", "#", ".", ".", ".", ".", ".", ".", "."},
 		{"#", ".", ".", ".", "#", ".", ".", ".", "#", ".", "."},
 		{".", "#", ".", ".", ".", ".", "#", ".", ".", "#", "."},
@@ -120,12 +120,12 @@ func TestDay3(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.testName, func(t *testing.T) {
-			assert.Equal(t, test.expected, day3Counter(mapp, test.stepsDown, test.stepsRight))
+			assert.Equal(t, test.expected, day3Counter(tobMap, test.stepsDown, test.stepsRight))
 		})
 	}
 
 	t.Run("Wrapper test", func(t *testing.T) {
-		assert.Equal(t, 336, Day3(mapp, [][]int{
+		assert.Equal(t, 336, Day3(tobMap, [][]int{
 			{1, 1},
 			{3, 1},
 			{5, 1},
@@ -252,4 +252,75 @@ func TestDay5(t *testing.T) {
 		assert.Equal(t, 821, Day5Part2(seatLocations))
 	})
 
+}
+
+func TestDay6(t *testing.T) {
+	t.Skip()
+	// TODO come back to this
+	var declartionForms = `abc
+
+a
+b
+c
+
+ab
+ac
+
+a
+a
+a
+a
+
+b`
+	t.Run("Unique count of anyone answering yes", func(t *testing.T) {
+		assert.Equal(t, 11, Day6(declartionForms, false))
+	})
+
+	t.Run("Unique count of everyone answering yes", func(t *testing.T) {
+		assert.Equal(t, 6, Day6(declartionForms, true))
+	})
+
+	declartionForms += `
+
+ijmp
+dmjp
+pjm
+pmidj
+lpjafmzv
+`
+
+	t.Run("Unique count of everyone answering yes with ending newline character which causes issue", func(t *testing.T) {
+		assert.Equal(t, 9, Day6(declartionForms, true))
+	})
+}
+
+func TestDay7(t *testing.T) {
+	t.Skip()
+	bagName := "shiny gold"
+	rules := `light red bags contain 1 bright white bag, 2 muted yellow bags.
+dark orange bags contain 3 bright white bags, 4 muted yellow bags.
+bright white bags contain 1 shiny gold bag.
+muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
+shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
+dark olive bags contain 3 faded blue bags, 4 dotted black bags.
+vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+faded blue bags contain no other bags.
+dotted black bags contain no other bags.`
+
+	rules2 := `shiny gold bags contain 2 dark red bags.
+dark red bags contain 2 dark orange bags.
+dark orange bags contain 2 dark yellow bags.
+dark yellow bags contain 2 dark green bags.
+dark green bags contain 2 dark blue bags.
+dark blue bags contain 2 dark violet bags.
+dark violet bags contain no other bags.`
+
+	t.Run("Testing Part 1 rules", func(t *testing.T) {
+		assert.Equal(t, 4, Day7(rules, bagName, Day7SearchOptionIsIn))
+	})
+
+	t.Run("Testing how many bags would be required", func(t *testing.T) {
+		assert.Equal(t, 32, Day7(rules, bagName, Day7SearchOptionContains))
+		assert.Equal(t, 126, Day7(rules2, bagName, Day7SearchOptionContains))
+	})
 }

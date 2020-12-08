@@ -3,11 +3,15 @@ package advent2020
 import (
 	"testing"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	log.SetLevel(log.DebugLevel)
+}
+
 func TestDay1(t *testing.T) {
-	// TODO think of a way to have this more configurable outside of each test
 	t.Skip()
 	var expenseReport = []int{
 		1721,
@@ -59,7 +63,7 @@ func TestDay2(t *testing.T) {
 }
 
 func TestDay3(t *testing.T) {
-	t.Skip()
+	// t.Skip()
 	var tobMap = [][]string{
 		{".", ".", "#", "#", ".", ".", ".", ".", ".", ".", "."},
 		{"#", ".", ".", ".", "#", ".", ".", ".", "#", ".", "."},
@@ -75,68 +79,61 @@ func TestDay3(t *testing.T) {
 	}
 
 	var tests = []struct {
-		testName   string
-		expected   int
-		stepsDown  int
-		stepsRight int
+		testName string
+		expected int
+		tobMove  ToboganMovement
 	}{
 		{
 			"Day 3 Test",
 			7,
-			1,
-			3,
+			ToboganMovement{3, 1},
 		},
 		{
 			"Day 3 Test Part 2 - A",
 			2,
-			1,
-			1,
+			ToboganMovement{1, 1},
 		},
 		{
 			"Day 3 Test Part 2 - B",
 			7,
-			1,
-			3,
+			ToboganMovement{3, 1},
 		},
 		{
 			"Day 3 Test Part 2 - C",
 			3,
-			1,
-			5,
+			ToboganMovement{5, 1},
 		},
 		{
 			"Day 3 Test Part 2 - D",
 			4,
-			1,
-			7,
+			ToboganMovement{7, 1},
 		},
 		{
 			"Day 3 Test Part 2 - E",
 			2,
-			2,
-			1,
+			ToboganMovement{1, 2},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.testName, func(t *testing.T) {
-			assert.Equal(t, test.expected, day3Counter(tobMap, test.stepsDown, test.stepsRight))
+			assert.Equal(t, test.expected, day3Counter(tobMap, test.tobMove))
 		})
 	}
 
 	t.Run("Wrapper test", func(t *testing.T) {
-		assert.Equal(t, 336, Day3(tobMap, [][]int{
-			{1, 1},
-			{3, 1},
-			{5, 1},
-			{7, 1},
-			{1, 2},
+		assert.Equal(t, 336, Day3(tobMap, []ToboganMovement{
+			ToboganMovement{1, 1},
+			ToboganMovement{3, 1},
+			ToboganMovement{5, 1},
+			ToboganMovement{7, 1},
+			ToboganMovement{1, 2},
 		}))
 	})
 }
 
 func TestDay4(t *testing.T) {
-	t.Skip()
+	// t.Skip()
 	var passportData = `ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
 
@@ -295,7 +292,7 @@ lpjafmzv
 }
 
 func TestDay7(t *testing.T) {
-	t.Skip()
+	// t.Skip()
 	bagName := "shiny gold"
 	rules := `light red bags contain 1 bright white bag, 2 muted yellow bags.
 dark orange bags contain 3 bright white bags, 4 muted yellow bags.
@@ -322,5 +319,28 @@ dark violet bags contain no other bags.`
 	t.Run("Testing how many bags would be required", func(t *testing.T) {
 		assert.Equal(t, 32, Day7(rules, bagName, Day7SearchOptionContains))
 		assert.Equal(t, 126, Day7(rules2, bagName, Day7SearchOptionContains))
+	})
+}
+
+func TestDay8(t *testing.T) {
+	// t.Skip()
+	programData := []string{
+		"nop +0",
+		"acc +1",
+		"jmp +4",
+		"acc +3",
+		"jmp -3",
+		"acc -99",
+		"acc +1",
+		"jmp -4",
+		"acc +6",
+	}
+
+	t.Run("Getting the accumlator value before fixing the program execution", func(t *testing.T) {
+		assert.Equal(t, 5, Day8(programData, false))
+	})
+
+	t.Run("Getting the accumlator value after fixing the program execution", func(t *testing.T) {
+		assert.Equal(t, 8, Day8(programData, true))
 	})
 }

@@ -21,7 +21,6 @@ const dataDirectory = "./test/advent2020/"
 var days = map[string]day{
 	"Day1": {
 		Function: func(cmd *cobra.Command, args []string) {
-			// TODO add these to the existing wrapper for ease and subscommands to acll specifific days
 			data := helpers.ReadIntDataFromFile(dataDirectory + "day1.txt")
 			fmt.Println(advent2020.Day1(data))
 			fmt.Println(advent2020.Day1Part2(data))
@@ -35,13 +34,13 @@ var days = map[string]day{
 	"Day3": {
 		Function: func(cmd *cobra.Command, args []string) {
 			data := helpers.ReadArrayDataFromFile(dataDirectory + "day3.txt")
-			fmt.Println(advent2020.Day3(data, [][]int{{1, 3}}))
-			fmt.Println(advent2020.Day3(data, [][]int{
-				{1, 1},
-				{3, 1},
-				{5, 1},
-				{7, 1},
-				{1, 2},
+			fmt.Println(advent2020.Day3(data, []advent2020.ToboganMovement{advent2020.ToboganMovement{3, 1}}))
+			fmt.Println(advent2020.Day3(data, []advent2020.ToboganMovement{
+				advent2020.ToboganMovement{1, 1},
+				advent2020.ToboganMovement{3, 1},
+				advent2020.ToboganMovement{5, 1},
+				advent2020.ToboganMovement{7, 1},
+				advent2020.ToboganMovement{1, 2},
 			}))
 		},
 	},
@@ -71,6 +70,13 @@ var days = map[string]day{
 			data := helpers.ReadDataFromFile(dataDirectory + "day7.txt")
 			fmt.Println(advent2020.Day7(data, "shiny gold", advent2020.Day7SearchOptionIsIn))
 			fmt.Println(advent2020.Day7(data, "shiny gold", advent2020.Day7SearchOptionContains))
+		},
+	},
+	"Day8": {
+		Function: func(cmd *cobra.Command, args []string) {
+			data := helpers.ReadStringDataFromFile(dataDirectory + "day8.txt")
+			fmt.Println(advent2020.Day8(data, false))
+			fmt.Println(advent2020.Day8(data, true))
 		},
 	},
 }

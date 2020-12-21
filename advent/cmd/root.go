@@ -8,13 +8,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cfgFile string
+var (
+	cfgFile string
+	debug   bool
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use: "advent",
 }
 
+// Execute cobra normal command
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -22,6 +26,14 @@ func Execute() {
 	}
 }
 
+func setLogLevel() {
+	if debug {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.InfoLevel)
+	}
+}
+
 func init() {
-	log.SetLevel(log.InfoLevel)
+	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug output of logging")
 }

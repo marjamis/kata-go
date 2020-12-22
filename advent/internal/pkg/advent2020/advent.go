@@ -432,6 +432,10 @@ func Day7(rulesList string, findBag string, typeOfCheck Day7SearchOption) (count
 	bags := map[string]day7Bag{}
 	for _, rule := range rules {
 		bag := strings.Split(rule, " bags contain ")[0]
+		// Not required in tests but required in actual data. Should be fixed.
+		if len(bag) < 1 {
+			continue
+		}
 		contains := strings.Split(rule, " bags contain ")[1]
 		re := regexp.MustCompile(`(.*? bag)s?[,.]`)
 		nc := re.FindAllStringSubmatch(contains, -1)
@@ -709,7 +713,7 @@ func Day10Part2(adaptors []int) int {
 		}
 		nodes = append(nodes, node)
 	}
-	//TODO optimise the above by removing uncessary loop
+	//TODO optimise the above by removing uncessary loop i.e. combine the top and below into one for the calculated.
 
 	// Create a map of adaptors which return the number possible other adaptors it can be connected to.
 	adaptorToBranchesMap := map[int]int{}
@@ -1038,8 +1042,8 @@ func Day12(navigationInstructions []string, movementType day12MovementType) (man
 			shipPosition.Day12MovementTypeWaypoint(action, value, &waypoint)
 		}
 
-		log.Infof("Action: %c - Count: %d - Ships direction: %+v (X:%d/Y:%d)", action, value, day12CompassPoint(shipPosition.direction), shipPosition.X, shipPosition.Y)
-		log.Infof("Action: %c - Count: %d - Waypoint direction: %+v (X:%d/Y:%d)", action, value, day12CompassPoint(waypoint.direction), waypoint.X, waypoint.Y)
+		log.Debugf("Action: %c - Count: %d - Ships direction: %+v (X:%d/Y:%d)", action, value, day12CompassPoint(shipPosition.direction), shipPosition.X, shipPosition.Y)
+		log.Debugf("Action: %c - Count: %d - Waypoint direction: %+v (X:%d/Y:%d)", action, value, day12CompassPoint(waypoint.direction), waypoint.X, waypoint.Y)
 	}
 
 	return helpers.ManhattansDistance(int(shipPosition.X), int(shipPosition.Y), 0, 0)
@@ -1054,7 +1058,6 @@ func Day13(data []string) (n int) {
 		timestamp int64
 		busID     int64
 	}{
-		// TODO Hacky but until I think of a better trick
 		timestamp: 99999999999999999,
 		busID:     0,
 	}
@@ -1924,7 +1927,6 @@ func calculateGroupAdvanced(expression string) (result int) {
 				rep := operations[i-2] + " + " + operation
 				pv := strconv.Itoa(previ + vali)
 				expression = strings.Replace(expression, rep, pv, 1)
-				// TODO Try to remove this break
 				break
 			} else {
 				nextOp = operation

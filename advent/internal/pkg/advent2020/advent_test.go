@@ -864,12 +864,68 @@ aaaabbb`
 ababbb
 bababa
 abbbab
+aabbba
 aaabbb
-aaaabbb`
+aabbab
+aaaabbb
+abaab`
 
 	t.Run("Find the valid messages", func(t *testing.T) {
-		assert.Equal(t, 2, Day19(testdata))
-		assert.Equal(t, 0, Day19(testdata2))
+		assert.Equal(t, 2, Day19(testdata, false))
+		assert.Equal(t, 3, Day19(testdata2, false))
+	})
+
+	testdataP2 := `42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: "a"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: "b"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+bbabbbbaabaabba
+babbbbaabbbbbabbbbbbaabaaabaaa
+aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+bbbbbbbaaaabbbbaaabbabaaa
+bbbababbbbaaaaaaaabbababaaababaabab
+ababaaaaaabaaab
+ababaaaaabbbaba
+baabbaaaabbaaaababbaababb
+abbbbabbbbaaaababbbbbbaaaababb
+aaaaabbaabaaaaababaa
+aaaabbaaaabbaaa
+aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+babaaabbbaaabaababbaabababaaab
+aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba`
+
+	t.Run("Find the valid messages", func(t *testing.T) {
+		assert.Equal(t, 3, Day19(testdataP2, false))
+		assert.Equal(t, 12, Day19(testdataP2, true))
 	})
 }
 
@@ -991,30 +1047,30 @@ Tile 3079:
 				{7, 4, 1},
 				{8, 5, 2},
 				{9, 6, 3},
-			}, map[string]day20RotationFingerprints{}}
+			}, map[string]day20RotationFingerprint{}}
 			testRotateExpected2Right := day20Tile{"1", [][]rune{
 				{9, 8, 7},
 				{6, 5, 4},
 				{3, 2, 1},
-			}, map[string]day20RotationFingerprints{}}
+			}, map[string]day20RotationFingerprint{}}
 
 			testRotateExpected3Right := day20Tile{"1", [][]rune{
 				{3, 6, 9},
 				{2, 5, 8},
 				{1, 4, 7},
-			}, map[string]day20RotationFingerprints{}}
+			}, map[string]day20RotationFingerprint{}}
 
 			testRotateExpected4Right := day20Tile{"1", [][]rune{
 				{1, 2, 3},
 				{4, 5, 6},
 				{7, 8, 9},
-			}, map[string]day20RotationFingerprints{}}
+			}, map[string]day20RotationFingerprint{}}
 
 			testRotateInput := day20Tile{"1", [][]rune{
 				{1, 2, 3},
 				{4, 5, 6},
 				{7, 8, 9},
-			}, map[string]day20RotationFingerprints{}}
+			}, map[string]day20RotationFingerprint{}}
 
 			assert.Equal(t, testRotateExpected1Right, testRotateInput.day20RotateRight())
 			assert.Equal(t, testRotateExpected2Right, testRotateInput.day20RotateRight().day20RotateRight())
@@ -1027,13 +1083,13 @@ Tile 3079:
 				{1, 2, 3},
 				{4, 5, 6},
 				{7, 8, 9},
-			}, map[string]day20RotationFingerprints{}}
+			}, map[string]day20RotationFingerprint{}}
 
 			testHFlipExpected := day20Tile{"1", [][]rune{
 				{3, 2, 1},
 				{6, 5, 4},
 				{9, 8, 7},
-			}, map[string]day20RotationFingerprints{}}
+			}, map[string]day20RotationFingerprint{}}
 
 			assert.Equal(t, testHFlipExpected, testHFlipInput.day20FlipHorizontal())
 			assert.Equal(t, testHFlipInput, testHFlipInput.day20FlipHorizontal().day20FlipHorizontal())
@@ -1044,13 +1100,13 @@ Tile 3079:
 				{1, 2, 3},
 				{4, 5, 6},
 				{7, 8, 9},
-			}, map[string]day20RotationFingerprints{}}
+			}, map[string]day20RotationFingerprint{}}
 
 			testVFlipExpected := day20Tile{"1", [][]rune{
 				{7, 8, 9},
 				{4, 5, 6},
 				{1, 2, 3},
-			}, map[string]day20RotationFingerprints{}}
+			}, map[string]day20RotationFingerprint{}}
 
 			assert.Equal(t, testVFlipExpected, testVFlipInput.day20FlipVertical())
 			assert.Equal(t, testVFlipInput, testVFlipInput.day20FlipVertical().day20FlipVertical())
@@ -1063,13 +1119,13 @@ Tile 3079:
 			{'#', '.', '.'},
 			{'.', '.', '#'},
 			{'#', '#', '#'},
-		}, map[string]day20RotationFingerprints{}}
+		}, map[string]day20RotationFingerprint{}}
 
 		assert.Equal(t, 73, fingerprintInput{'#', '.', '.', '#', '.', '.', '#'}.day20GenerateFingerprint())
 		assert.Equal(t, 11, fingerprintInput{'#', '.', '#', '#'}.day20GenerateFingerprint())
 		t.Run("Generating all fingerprints from tile", func(t *testing.T) {
 			testInput.day20TileFingerprintInputData("R=1")
-			assert.Equal(t, day20RotationFingerprints{
+			assert.Equal(t, day20RotationFingerprint{
 				rotation: "R=1",
 				rotatedImage: [][]rune{
 					{'#', '.', '.'},
@@ -1088,11 +1144,11 @@ Tile 3079:
 				{'#', '.', '.'},
 				{'.', '.', '#'},
 				{'#', '#', '#'},
-			}, map[string]day20RotationFingerprints{}}
+			}, map[string]day20RotationFingerprint{}}
 
 			testInput2 = testInput2.day20RotateRight()
 			testInput2.day20TileFingerprintInputData("R=1")
-			assert.Equal(t, day20RotationFingerprints{
+			assert.Equal(t, day20RotationFingerprint{
 				rotation: "R=1",
 				rotatedImage: [][]rune{
 					{'#', '.', '#'},
@@ -1107,7 +1163,7 @@ Tile 3079:
 
 			testInput2 = testInput2.day20RotateRight()
 			testInput2.day20TileFingerprintInputData("R=1")
-			assert.Equal(t, day20RotationFingerprints{
+			assert.Equal(t, day20RotationFingerprint{
 				rotation: "R=1",
 				rotatedImage: [][]rune{
 					{'#', '#', '#'},
@@ -1125,5 +1181,51 @@ Tile 3079:
 
 	t.Run("Finding the multiplication of corners", func(t *testing.T) {
 		assert.Equal(t, 20899048083289, Day20(testdata))
+	})
+}
+
+func TestDay22(t *testing.T) {
+	t.Skip()
+	testdata := `Player 1:
+9
+2
+6
+3
+1
+
+Player 2:
+5
+8
+4
+7
+10`
+
+	recursiveLoop := `Player 1:
+43
+19
+
+Player 2:
+2
+29
+14`
+
+	t.Run("", func(t *testing.T) {
+		assert.Equal(t, 306, Day22(testdata, false))
+		assert.Equal(t, 0, Day22(recursiveLoop, true))
+		assert.Equal(t, 291, Day22(testdata, true))
+	})
+}
+
+func TestDay23(t *testing.T) {
+	//t.Skip()
+	testdata := `389125467`
+
+	t.Run("", func(t *testing.T) {
+		assert.Equal(t, "92658374", Day23(testdata, 10))
+		assert.Equal(t, "67384529", Day23(testdata, 100))
+		if testing.Short() {
+			t.Skip("Skipping during short tests as these take quite a while.")
+		}
+		assert.Equal(t, "149245887792", Day23(testdata, 10000000))
 	})
 }

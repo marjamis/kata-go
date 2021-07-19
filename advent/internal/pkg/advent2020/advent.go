@@ -1,8 +1,10 @@
 package advent2020
 
 import (
+	"bufio"
 	"fmt"
 	"math"
+	"reflect"
 	"regexp"
 	"sort"
 	"strconv"
@@ -1996,35 +1998,30 @@ func Day18WrapperPart2(expressions []string) (result int) {
 type day19RuleMap map[string]string
 
 func (rulemap day19RuleMap) day19GetRules(rule string) (s string) {
-	for true {
-		options := strings.Split(rulemap[rule], "|")
-		if options[0] == `"a"` || options[0] == `"b"` {
-			return strings.Trim(options[0], `"`)
-		}
-
-		s += "("
-		for i, k := range options {
-			suboptions := strings.Split(strings.Trim(k, " "), " ")
-			for _, l := range suboptions {
-				s += rulemap.day19GetRules(l)
-			}
-			if len(suboptions) > 1 && i != len(options)-1 {
-				s += "|"
-			}
-		}
-		s += ")"
-
-		break
+	if rulemap[rule] == `"a"` || rulemap[rule] == `"b"` || rulemap[rule] == `"R1"` || rulemap[rule] == `"R2"` {
+		return strings.Trim(rulemap[rule], `"`)
 	}
+
+	options := strings.Split(rulemap[rule], "|")
+	s = "("
+	for i, k := range options {
+		suboptions := strings.Split(strings.Trim(k, " "), " ")
+		for _, l := range suboptions {
+			s += rulemap.day19GetRules(l)
+		}
+		if i != len(options)-1 {
+			s += "|"
+		}
+	}
+	s += ")"
 
 	return
 }
 
 // Day19 entry function
-func Day19(data string) (validMessages int) {
+func Day19(data string, ruleChange bool) (validMessages int) {
 	split := strings.Split(data, "\n\n")
 	rules := strings.Split(split[0], "\n")
-	// messages := split[1]
 	rulemap := day19RuleMap{}
 
 	for _, rule := range rules {
@@ -2032,14 +2029,18 @@ func Day19(data string) (validMessages int) {
 		rulemap[s[0]] = strings.Trim(s[1], " ")
 	}
 
-	rev := rulemap.day19GetRules("0")
-	// re := regexp.MustCompile(rev + `\s`)
-	log.Infof("Regex: %s", rev)
+	// As per part 2 two rules are being replaced.
+	// 8: 42 | 42 8
+	// 11: 42 31 | 42 11 31
+	if ruleChange {
+		rulemap["8"] = `42 | 42 8R`
+		rulemap["11"] = `42 31 | 42 11R 31`
+		rulemap["8R"] = `"R1"`
+		rulemap["11R"] = `"R2"`
+	}
 
-	// vms := re.FindAllString(messages, -1)
-	// validMessages = len(vms)
-	// log.Infof("Count of valid messages is: %d", validMessages)
-	// log.Info(vms)
+	rev := rulemap.day19GetRules("0")
+	log.Infof("Regex: %s", rev)
 
 	re2 := regexp.MustCompile("^" + rev + "$")
 	validMessages = 0
@@ -2048,6 +2049,7 @@ func Day19(data string) (validMessages int) {
 		log.Debug(kl)
 		if len(kl) > 0 {
 			validMessages++
+			log.Info(v)
 		}
 	}
 
@@ -2057,10 +2059,10 @@ func Day19(data string) (validMessages int) {
 type day20Tile struct {
 	id           string
 	image        [][]rune
-	fingerprints map[string]day20RotationFingerprints
+	fingerprints map[string]day20RotationFingerprint
 }
 
-type day20RotationFingerprints struct {
+type day20RotationFingerprint struct {
 	rotation     string
 	rotatedImage [][]rune
 	top          fingerprint
@@ -2185,7 +2187,7 @@ func (tile day20Tile) day20TileFingerprintInputData(rotation string) {
 		rotatedImage[i] = newY
 	}
 
-	fingerprints := day20RotationFingerprints{
+	fingerprints := day20RotationFingerprint{
 		rotation:     rotation,
 		rotatedImage: rotatedImage,
 		top:          fingerprint(fingerprintInput(tile.image[0]).day20GenerateFingerprint()),
@@ -2234,71 +2236,160 @@ func (tile day20Tile) day20GenerateRotationData() {
 	tile.image = originalImage
 }
 
+type day20RotationFingerprintConnection struct {
+	from day20RotationFingerprint
+	to   day20RotationFingerprint
+}
+
+// This is used to find a corner
+func day20MatchFingerPrint(from, to day20Tile) (fingerprints []day20RotationFingerprintConnection) {
+	if from.id == to.id {
+		// log.Debug("Trying to compare the same tile. Skipping...")
+		return
+	}
+
+	log.Debugf("From rotations:")
+	for k, fp := range from.fingerprints {
+		log.Debugf("Rotation: %s - Top: %d Bottom: %d, Left: %d, Right: %d", k, fp.top, fp.bottom, fp.left, fp.right)
+	}
+
+	log.Debugf("To rotations:")
+	for k, fp := range to.fingerprints {
+		log.Debugf("Rotation: %s - Top: %d Bottom: %d, Left: %d, Right: %d", k, fp.top, fp.bottom, fp.left, fp.right)
+	}
+
+	for _, pfingerprint := range from.fingerprints {
+		for _, sfingerprint := range to.fingerprints {
+			if pfingerprint.left == sfingerprint.right {
+				// log.Debugf("Tile %s is connected to tile %s from left to right.", from.id, to.id)
+				fingerprints = append(fingerprints, day20RotationFingerprintConnection{
+					pfingerprint,
+					sfingerprint,
+				})
+			}
+
+			if pfingerprint.right == sfingerprint.left {
+				// log.Debugf("Tile %s is connected to tile %s from right to left.", from.id, to.id)
+				fingerprints = append(fingerprints, day20RotationFingerprintConnection{
+					pfingerprint,
+					sfingerprint,
+				})
+			}
+
+			if pfingerprint.bottom == sfingerprint.top {
+				// log.Debugf("Tile %s is connected to tile %s from bottom to top.", from.id, to.id)
+				fingerprints = append(fingerprints, day20RotationFingerprintConnection{
+					pfingerprint,
+					sfingerprint,
+				})
+			}
+
+			if pfingerprint.top == sfingerprint.bottom {
+				// log.Debugf("Tile %s is connected to tile %s from top to bottom.", from.id, to.id)
+				fingerprints = append(fingerprints, day20RotationFingerprintConnection{
+					pfingerprint,
+					sfingerprint,
+				})
+			}
+		}
+
+	}
+
+	return
+}
+
 func (tiles day20Tiles) day20Find() (result int) {
+	// max := int(math.Sqrt(float64(len(tiles))))
+	// log.Debugf("Max size is: %d", max)
 	image := day20Image{}
-	startingTile := tiles[1]
-	image = append(image, []day20Tile{startingTile}) // tile is 0,0
-	image.Print()
+	// for i := 0; i < max; i++ {
+	// 	image = append(image, make([]day20Tile, max))
+	// }
+	//
+	// for i := 0; i < len(image); i++ {
+	// 	for j := 0; j < len(image[i]); j++ {
+	// 		log.Debugf("i=%d j=%d", i, j)
+	// 	}
+	// }
 
-	t := []day20RotationFingerprints{startingTile.fingerprints["RotateOriginal"]}
-out:
-	for _, pfingerprint := range t {
-		for _, stile := range tiles {
-			for _, sfingerprint := range stile.fingerprints {
-				if startingTile.id != stile.id {
-					log.Debugf("pfinger: %+v - sfinger: %+v", pfingerprint, sfingerprint)
-					if pfingerprint.left == sfingerprint.right {
-						log.Debugf("Match (pLeft-sRight) v: %d is found: %s to: %s", pfingerprint.left, startingTile.id, stile.id)
-						log.Debugf("%+v", sfingerprint)
-						startingTile.image = pfingerprint.rotatedImage
-						stile.image = sfingerprint.rotatedImage
-						//TODO shouldn't be image[0] but the write value
-						image[0] = append([]day20Tile{stile}, image[0]...)
-						break out
-					}
+	// image = append(image, []day20Tile{tiles[0]}) // tile is 0,0
+	// tiles = tiles[1:]
 
-					if pfingerprint.right == sfingerprint.left {
-						log.Debugf("Match (pRight-sLeft) v: %d is found: %s to: %s", pfingerprint.right, startingTile.id, stile.id)
-						startingTile.image = pfingerprint.rotatedImage
-						stile.image = sfingerprint.rotatedImage
-						image[0] = append(image[0], stile)
-						break out
-					}
-
-					if pfingerprint.bottom == sfingerprint.top {
-						log.Debugf("Match (pBottom-sTop) v: %d is found: %s to: %s", pfingerprint.bottom, startingTile.id, stile.id)
-						log.Debugf("Normal: %+v Rotated: %+v", stile.image, sfingerprint.rotatedImage)
-						log.Debugf("%+v", sfingerprint)
-						startingTile.image = pfingerprint.rotatedImage
-						stile.image = sfingerprint.rotatedImage
-						log.Debugf("pfinger: %d sfinger: %d", int(pfingerprint.bottom), int(sfingerprint.top))
-						log.Debugf("Normal: %+v Rotated: %+v", stile.image, sfingerprint.rotatedImage)
-
-						// Create new row below (of same length as current) and insert into the right position
-						new := make([]day20Tile, len(image[0]))
-						new[0] = stile
-
-						image = append(image, new)
-						break out
-					}
-
-					if pfingerprint.top == sfingerprint.bottom {
-						log.Debugf("Match (pTop-sBottom) v %d is found: %s to: %s", pfingerprint.top, startingTile.id, stile.id)
-
-						startingTile.image = pfingerprint.rotatedImage
-						stile.image = sfingerprint.rotatedImage
-
-						// Create new row below (of same length as current) and insert into the right position
-						new := make([]day20Tile, len(image))
-						new[0] = stile
-
-						image = append(day20Image{new}, image...)
-						break out
-					}
+	// update := func() {
+	//
+	// }
+	for _, from := range tiles {
+		count := 0
+		for _, to := range tiles {
+			if from.id == "2311" && to.id == "1951" {
+				if len(day20MatchFingerPrint(from, to)) > 0 {
+					count++
 				}
 			}
 		}
+		if count > 0 {
+			log.Debugf("Tile: %s has %d connections", from.id, count)
+		}
 	}
+
+	// total:
+	// 	for {
+	// 		for ii := 0; ii < len(image); ii++ {
+	// 			for jj := 0; jj < len(image[ii]); jj++ {
+	// 				current := image[ii][jj]
+	// 			out:
+	// 				for _, pfingerprint := range current.fingerprints {
+	// 					for ni, stile := range tiles {
+	// 						for _, sfingerprint := range stile.fingerprints {
+	// 							if current.id != stile.id {
+	// 								if pfingerprint.left == sfingerprint.right {
+	// 									current.image = pfingerprint.rotatedImage
+	// 									stile.image = sfingerprint.rotatedImage
+	// 									image[ii] = append([]day20Tile{stile}, image[ii]...)
+	// 									break out
+	// 								}
+	//
+	// 								if pfingerprint.right == sfingerprint.left {
+	// 									current.image = pfingerprint.rotatedImage
+	// 									stile.image = sfingerprint.rotatedImage
+	// 									image[ii] = append(image[ii], stile)
+	// 									break out
+	// 								}
+	//
+	// 								if pfingerprint.bottom == sfingerprint.top {
+	// 									current.image = pfingerprint.rotatedImage
+	// 									stile.image = sfingerprint.rotatedImage
+	// 									// Create new row below (of same length as current) and insert into the right position
+	// 									new := make([]day20Tile, len(image[0]))
+	// 									new[0] = stile
+	// 									image = append(image, new)
+	// 									break out
+	// 								}
+	//
+	// 								if pfingerprint.top == sfingerprint.bottom {
+	// 									current.image = pfingerprint.rotatedImage
+	// 									stile.image = sfingerprint.rotatedImage
+	// 									// Create new row below (of same length as current) and insert into the right position
+	// 									new := make([]day20Tile, len(image))
+	// 									new[0] = stile
+	// 									image = append(day20Image{new}, image...)
+	// 									break out
+	// 								}
+	// 							}
+	// 						}
+	// 						log.Debugf("Len %d ni %d", len(tiles), ni)
+	// 						if ni+1 < len(tiles) {
+	// 							// Remove the tile from tiles as it's now in the image
+	// 							tiles = append(tiles[:ni], tiles[ni+1:]...)
+	// 						} else {
+	// 							tiles = nil
+	// 							break total
+	// 						}
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
 
 	image.Print()
 
@@ -2332,11 +2423,254 @@ func Day20(data string) (val int) {
 		t := day20Tile{
 			id:           tileID[1],
 			image:        image,
-			fingerprints: map[string]day20RotationFingerprints{},
+			fingerprints: map[string]day20RotationFingerprint{},
 		}
 		t.day20GenerateRotationData()
 		tiles = append(tiles, t)
 	}
 
 	return tiles.day20Find()
+}
+
+func day22Play(p1, p2 []int64, recursive bool, gamenumber int) ([]int64, []int64) {
+	p1History := [][]int64{}
+	p2History := [][]int64{}
+
+	for i := 1; len(p1) > 0 && len(p2) > 0; i++ {
+		// Take card from deck.
+		p1Card := p1[0]
+		p1 = p1[1:]
+		p2Card := p2[0]
+		p2 = p2[1:]
+
+		log.Debugf("Game %d - Round %d...", gamenumber, i)
+		log.Debugf("Player 1's deck: %+v", p1)
+		log.Debugf("Player 2's deck: %+v", p2)
+		log.Debugf("Player 1 plays: %d", p1Card)
+		log.Debugf("Player 2 plays: %d", p2Card)
+
+		if recursive {
+			// A check to see if same cards same order and then give the victory to player 1.
+			for index := range p1History {
+				if reflect.DeepEqual(p1History[index], p1) && reflect.DeepEqual(p2History[index], p2) {
+					log.Debug("Player 1 automatically wins.")
+					return []int64{0}, nil
+				}
+			}
+		}
+
+		// Save pattern in history for later usage in case of infinte loops in the recursion.
+		p1History = append(p1History, p1)
+		p2History = append(p2History, p2)
+
+		if recursive {
+			// If both players have at least as many cards remaining in their deck as the value of the card they just drew, the winner of the round is determined by playing a new game of Recursive Combat (see below).
+			if p1Card <= int64(len(p1)) && p2Card <= int64(len(p2)) {
+				log.Debug("Playing a sub-game to determine the winner...")
+
+				// Make copies of all data for recursive values
+				p1c := make([]int64, p1Card)
+				p2c := make([]int64, p2Card)
+				for i := 0; i < len(p1c); i++ {
+					p1c[i] = p1[i]
+				}
+				for i := 0; i < len(p2c); i++ {
+					p2c[i] = p2[i]
+				}
+
+				// TODO fix game number
+				tp1, tp2 := day22Play(p1c, p2c, recursive, gamenumber+1)
+
+				// Based on the length of the returnned values will determine who will win this round.
+				if len(tp1) != 0 {
+					p1 = append(p1, p1Card, p2Card)
+				} else if len(tp2) != 0 {
+					p2 = append(p2, p2Card, p1Card)
+				} else {
+					log.Error("There was an error.")
+					log.Errorf("TP1 %d TP2 %d", len(tp1), len(tp2))
+				}
+
+				// As the round winner is determined above we continue to next round to skip the high/low check.
+				continue
+			}
+		}
+
+		// High card for this round.
+		if p1Card > p2Card {
+			// log.Debug("Player 1 won this round.")
+			p1 = append(p1, p1Card, p2Card)
+		} else if p2Card > p1Card {
+			// log.Debug("Player 2 won this round.")
+			p2 = append(p2, p2Card, p1Card)
+		}
+	}
+
+	return p1, p2
+}
+
+func Day22(data string, recursive bool) int {
+	playerdecks := map[string][]int64{}
+
+	for _, player := range strings.Split(data, "\n\n") {
+		scanner := bufio.NewScanner(strings.NewReader(player))
+		scanner.Scan()
+		playerName := scanner.Text()
+		playerdecks[playerName] = []int64{}
+
+		for scanner.Scan() {
+			card, _ := strconv.ParseInt(scanner.Text(), 0, 64)
+			playerdecks[playerName] = append(playerdecks[playerName], card)
+		}
+	}
+
+	p1, p2 := day22Play(playerdecks["Player 1:"], playerdecks["Player 2:"], recursive, 1)
+	name := ""
+	winner := []int64{}
+	if len(p1) != 0 {
+		name = "1"
+		winner = p1
+	} else if len(p2) != 0 {
+		name = "2"
+		winner = p2
+	}
+
+	var score int64
+	for i, j := len(winner)-1, 1; i >= 0; i, j = i-1, j+1 {
+		score += winner[i] * int64(j)
+	}
+
+	log.Infof("Player %s won the game. with a score of: %d", name, score)
+
+	return int(score)
+}
+
+func Day23(cupOrder string, moves int) (finalOrder string) {
+	order := make([]int, len(cupOrder))
+	for index, cup := range cupOrder {
+		nn, _ := strconv.ParseInt(string(cup), 0, 64)
+		order[index] = int(nn)
+	}
+
+	if moves == 10000000 {
+		temp := make([]int, 10000000-len(order))
+		for i, j := 0, 10; i < len(temp); i, j = i+1, j+1 {
+			temp[i] = j
+		}
+		order = append(order, temp...)
+		log.Debugf("Added in a million positions")
+	}
+
+	// Setting up as much reusable variables as I can outside of the loop
+	batchSize := moves
+	if moves == 10000000 {
+		batchSize = 5000
+	}
+	threeCups := make([]int, 3)
+	threeCupsIndex := make([]int, 3)
+
+	i := 0
+	for outer := 0; outer < moves; outer += batchSize {
+		log.Debugf("Batch: %d to %d", outer, outer+batchSize)
+		for round := outer; round < outer+batchSize; round++ {
+			orderLengthFull := len(order)
+			currentCupIndex := i % orderLengthFull
+			currentCup := order[currentCupIndex]
+
+			for j := 0; j < 3; j++ {
+				threeCupsIndex[j] = (i + j + 1) % orderLengthFull
+				threeCups[j] = order[(i+j+1)%orderLengthFull]
+			}
+
+			// log.Debugf("Three cups index: %+v - IsSorted? %v", threeCupsIndex, sort.SliceIsSorted(threeCupsIndex, func(i, j int) bool { return threeCupsIndex[i] < threeCupsIndex[j] }))
+
+			if sort.SliceIsSorted(threeCupsIndex, func(i, j int) bool { return threeCupsIndex[i] < threeCupsIndex[j] }) {
+				order = append(order[0:threeCupsIndex[0]], order[threeCupsIndex[2]+1:]...)
+			} else {
+				for _, rc := range threeCups {
+					for oindex := range order {
+						// TODO need a way to be able to use current indexes with the cups while not looping through order
+						if order[oindex] == rc {
+							order = append(order[0:oindex], order[oindex+1:]...)
+							break
+						}
+					}
+				}
+			}
+
+			destinationValue := -1
+			destinationCupIndex := -1
+			largest := -1
+			largestValue := -1
+			for index, value := range order {
+				if value < currentCup && value > destinationValue {
+					// Find the next lowest under currentCup
+					destinationCupIndex = index
+					destinationValue = value
+				}
+				if value > largestValue {
+					largest = index
+					largestValue = value
+				}
+			}
+
+			if destinationCupIndex == -1 {
+				destinationCupIndex = largest
+			}
+			// log.Debugf("Current cup: %+v - Three Cups: %+v - Order: %+v - Destination Cup Index: %+v (%d)", currentCup, threeCups, order, destinationCupIndex, order[destinationCupIndex])
+
+			// // Move cups to their new locations
+			additions := append([]int{}, order[destinationCupIndex+1:]...)
+			order = append(order[:destinationCupIndex+1], threeCups...)
+			order = append(order, additions...)
+
+			// If the cursor is in a different place recalculate the new index for the currentCup
+			if order[currentCupIndex] != currentCup {
+				if order[(currentCupIndex+1)%orderLengthFull] == currentCup {
+					i += +1
+				}
+				if order[(currentCupIndex+2)%orderLengthFull] == currentCup {
+					i += +2
+				}
+				if order[(currentCupIndex+3)%orderLengthFull] == currentCup {
+					i += +3
+				}
+			}
+
+			// No matter the next state increments the cursor position
+			i += 1
+		}
+		break
+	}
+
+	if moves != 10000000 {
+		startingIndex := 0
+
+		for in, o := range order {
+			if o == 1 {
+				startingIndex = in
+			}
+
+		}
+		for _, o := range order[startingIndex:] {
+			finalOrder += strconv.Itoa(int(o))
+		}
+		for _, o := range order[:startingIndex] {
+			finalOrder += strconv.Itoa(int(o))
+		}
+
+		finalOrder = strings.TrimLeft(finalOrder, "1")
+	} else {
+		for in, o := range order {
+			if o == 1 {
+				leng := len(order)
+				two := in % leng
+				three := in % leng
+				finalOrder = strconv.Itoa(two * three)
+				log.Debugf("Broken:   Data is: +1: %d (%d), +2: %d (%d)", two, order[two], three, order[three])
+			}
+		}
+	}
+
+	return
 }

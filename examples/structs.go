@@ -36,9 +36,10 @@ func copyReference() {
 	// a and c as the underlying data is changed for both
 	a.Name = "Orange Juice"
 	fmt.Println("\nAfter change to data")
-	fmt.Printf("a - %+v - %p\n", a, &a)
-	fmt.Printf("b - %+v - %p\n", b, &b)
-	fmt.Printf("c - %+v - %p\n", *c, c)
+	// The %#v provides additional information about the struct itself
+	fmt.Printf("a - %#v - %p\n", a, &a)
+	fmt.Printf("b - %#v - %p\n", b, &b)
+	fmt.Printf("c - %#v - %p\n", *c, c)
 }
 
 func main() {

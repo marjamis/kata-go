@@ -7,8 +7,12 @@ Adapted from: https://www.freecodecamp.org/news/dijkstras-shortest-path-algorith
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"strconv"
 	"strings"
+
+	"github.com/blushft/go-diagrams/diagram"
+	"github.com/blushft/go-diagrams/nodes/generic"
 )
 
 func ReadString(file string) string {
@@ -42,6 +46,35 @@ type Distance struct {
 }
 
 type distancemap map[string]Distance
+
+func createDiagram(nodes map[string]Node) {
+	image, err := diagram.New(diagram.Label("dijkstra Nodes"), diagram.Filename("dijkstra"), diagram.Direction("LR"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	image_nodes := map[string]*diagram.Node{}
+	for k, _ := range nodes {
+		image_nodes[k] = generic.Place.Datacenter().Label(k)
+	}
+
+	connectionAlreadyExists := map[string]bool{}
+	for _, v := range nodes {
+		for _, edge := range v.Edges {
+			// TODO this check will need improvement when multi-directions are implemented
+			if _, ok := connectionAlreadyExists[edge.Source.Name+"To"+edge.Destination.Name]; !ok {
+				image.Connect(image_nodes[edge.Source.Name], image_nodes[edge.Destination.Name], diagram.Bidirectional())
+				connectionAlreadyExists[edge.Source.Name+"To"+edge.Destination.Name] = true
+			}
+		}
+	}
+
+	// TODO Add the distance map when supported
+
+	if err := image.Render(); err != nil {
+		log.Fatal(err)
+	}
+}
 
 // generateNodeMap generates the map structure based off a preformatted string input
 func generateNodeMap(data string) map[string]Node {
@@ -139,8 +172,8 @@ func (d distancemap) print() {
 	}
 }
 
-// djikstra is the core of the algorithm
-func djikstra(nodes map[string]Node, distances map[string]Distance, path *[]string) {
+// dijkstra is the core of the algorithm
+func dijkstra(nodes map[string]Node, distances map[string]Distance, path *[]string) {
 
 	// Loop through each node in the path (as they're already precalculated) to find the next node with the smallest weight.
 	for _, v := range *path {
@@ -207,8 +240,11 @@ func workflow(nodes map[string]Node, source string, destination string) int {
 	// As each node needs to be in the path for the algorithm to end this simply checks the length of the path versuses the number of nodes
 	// TODO improve this especially for when a node may not be able to reach all other nodes
 	for i := 0; i < len(nodes); i++ {
-		djikstra(nodes, distances, &path)
+		dijkstra(nodes, distances, &path)
 	}
+
+	// TODO find where the mysterious node is added and remove
+	distances.print()
 
 	return distances[destination].Distance
 }
@@ -221,4 +257,6 @@ func main() {
 	source := "Node0"
 	destination := "Node6"
 	fmt.Printf("Distance between %s and %s is: %d\n", source, destination, workflow(nodes, source, destination))
+
+	createDiagram(nodes)
 }

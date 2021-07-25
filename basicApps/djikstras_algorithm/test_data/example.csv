@@ -1,0 +1,9 @@
+Node0,Node1,2,false
+Node0,Node2,6,false
+Node1,Node3,5,false
+Node2,Node3,8,false
+Node3,Node5,15,false
+Node3,Node4,10,false
+Node4,Node5,6,false
+Node4,Node6,2,false
+Node5,Node6,6,false

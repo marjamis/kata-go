@@ -22,7 +22,8 @@ func ReadString(file string) string {
 		return ""
 	}
 
-	return string(data)
+	// HACK to remove known empty character. Fix in the future
+	return string(data[:len(data)-1])
 }
 
 // Edge contains information related to the edge, connection between two nodes, of a graph
@@ -41,35 +42,50 @@ type Node struct {
 
 // Distance contains details about the a node from the source node
 type Distance struct {
-	Distance int
-	Visited  bool
+	Distance     int
+	ShortestPath []string
+	Visited      bool
 }
 
 type distancemap map[string]Distance
 
-func createDiagram(nodes map[string]Node) {
-	image, err := diagram.New(diagram.Label("dijkstra Nodes"), diagram.Filename("dijkstra"), diagram.Direction("LR"))
+func createDiagram(nodes map[string]Node, destinationDistance *Distance) {
+	image, err := diagram.New(diagram.Label("dijkstra Nodes"), diagram.Filename("dijkstra"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	image_nodes := map[string]*diagram.Node{}
-	for k, _ := range nodes {
+	for k := range nodes {
 		image_nodes[k] = generic.Place.Datacenter().Label(k)
 	}
 
 	connectionAlreadyExists := map[string]bool{}
 	for _, v := range nodes {
 		for _, edge := range v.Edges {
-			// TODO this check will need improvement when multi-directions are implemented
+			// FIXME this check will need improvement when multi-directions are implemented
 			if _, ok := connectionAlreadyExists[edge.Source.Name+"To"+edge.Destination.Name]; !ok {
-				image.Connect(image_nodes[edge.Source.Name], image_nodes[edge.Destination.Name], diagram.Bidirectional())
+				image.Connect(image_nodes[edge.Source.Name], image_nodes[edge.Destination.Name], func(o *diagram.EdgeOptions) {
+					o.Forward = true
+					o.Reverse = true
+					o.Label = strconv.Itoa(edge.Weight)
+				})
 				connectionAlreadyExists[edge.Source.Name+"To"+edge.Destination.Name] = true
 			}
 		}
 	}
 
-	// TODO Add the distance map when supported
+	// NOTE Add the distancemap.print() output when supported
+
+	// Placing the line for shortest path
+	for i := range destinationDistance.ShortestPath[:len(destinationDistance.ShortestPath)-1] {
+		s := destinationDistance.ShortestPath[i]
+		d := destinationDistance.ShortestPath[i+1]
+
+		image.Connect(image_nodes[s], image_nodes[d], func(o *diagram.EdgeOptions) {
+			o.Color = "#ff0000"
+		})
+	}
 
 	if err := image.Render(); err != nil {
 		log.Fatal(err)
@@ -128,7 +144,7 @@ func generateNodeMap(data string) map[string]Node {
 			}
 		}
 
-		// TODO improve the logic on this so in can be unidirectional and different weights
+		// FIXME improve the logic on this so in can be unidirectional and different weights
 		// Creates the edge based on the inputs read from the string data
 		edge := Edge{
 			Weight:      edge.Weight,
@@ -151,18 +167,23 @@ func generateNodeMap(data string) map[string]Node {
 }
 
 // shortestDistanceNode returns the name of the node with the smallest weight which hasn't been marked as visited
-func shortestDistanceNode(distances map[string]Distance) string {
+func shortestDistanceNode(distances map[string]Distance) (string, bool) {
 	// TODO remove the arbitary large value
 	var smallestWeight int = 999999
 	var nodeNameOfSmallestWeight string
 	for k, v := range distances {
-		if v.Distance != 0 && v.Distance != -1 && v.Distance < smallestWeight && !distances[k].Visited {
+		if v.Distance < smallestWeight && !distances[k].Visited {
 			smallestWeight = v.Distance
 			nodeNameOfSmallestWeight = k
 		}
 	}
 
-	return nodeNameOfSmallestWeight
+	var found bool
+	if smallestWeight != 999999 {
+		found = true
+	}
+
+	return nodeNameOfSmallestWeight, found
 }
 
 func (d distancemap) print() {
@@ -179,15 +200,15 @@ func dijkstra(nodes map[string]Node, distances map[string]Distance, path *[]stri
 	for _, v := range *path {
 		// For each node in the path we need to loop through it's edges to find the next node candidate with the smallest weight
 		for _, edge := range nodes[v].Edges {
-			// TODO likely an efficiency issue has it checks all paths edges again just doesn't update them?
 			// If the destination node of the edge is already marked as visited we skip as this path has already been calculated
 			if !distances[edge.Destination.Name].Visited {
 				// If the weight of the current edge to this destination node is smaller than what we're currently tracking update to this shorter path
 				// else ignore as we have a shorter distance already
 				if edge.Weight+distances[v].Distance < distances[edge.Destination.Name].Distance {
 					distances[edge.Destination.Name] = Distance{
-						Distance: edge.Weight + distances[v].Distance,
-						Visited:  distances[edge.Destination.Name].Visited,
+						Distance:     edge.Weight + distances[v].Distance,
+						ShortestPath: append(distances[v].ShortestPath, edge.Destination.Name),
+						Visited:      distances[edge.Destination.Name].Visited,
 					}
 				}
 
@@ -196,36 +217,43 @@ func dijkstra(nodes map[string]Node, distances map[string]Distance, path *[]stri
 	}
 
 	// Select the node closest to the source node based on the currently known distances
-	shortest := shortestDistanceNode(distances)
+	shortest, foundShortest := shortestDistanceNode(distances)
 
-	// Mark this shortest node as visited
-	distances[shortest] = Distance{
-		Distance: distances[shortest].Distance,
-		Visited:  true,
+	// Checks if the shortest distance had been found, if it hasn't it means there are still nodes available BUT they may not be connected to the main set of nodes, i.e. not processed for this path
+	if foundShortest {
+		// Mark this shortest node as visited
+		distances[shortest] = Distance{
+			Distance:     distances[shortest].Distance,
+			ShortestPath: distances[shortest].ShortestPath,
+			Visited:      true,
+		}
+
+		// Add it to the path as a node that has already been checked for the smallest weight
+		*path = append(*path, shortest)
 	}
-
-	// Add it to the path as a node that has already been checked for the smallest weight
-	*path = append(*path, shortest)
 }
 
-func workflow(nodes map[string]Node, source string, destination string) int {
+func workflow(nodes map[string]Node, source string, destination string) (int, distancemap) {
 	// Simple check on if both the source and destination exist within the nodemap
 	_, ok := nodes[source]
 	_, ok2 := nodes[destination]
 	if !ok || !ok2 {
 		fmt.Println("Source or detination not available in provided node map")
-		return -1
+		return -1, nil
 	}
 
-	// Create the map of Distances. This tracks the distance from the source to the all other nodes through the execution
+	// Create the map of distances. This tracks the distance from the source to the all other nodes through the execution
 	distances := distancemap{}
 	path := []string{source}
-	for k, _ := range nodes {
+	for k := range nodes {
 		// As this is the source it will have a distance of 0 and will be marked as visited
 		if k == source {
 			distances[k] = Distance{
 				Distance: 0,
-				Visited:  true,
+				ShortestPath: []string{
+					k,
+				},
+				Visited: true,
 			}
 		} else {
 			// TODO remove the arbitary large number method
@@ -238,25 +266,24 @@ func workflow(nodes map[string]Node, source string, destination string) int {
 
 	// This will loop through the algorthm to ensure all the nodes have a distance value from the source node
 	// As each node needs to be in the path for the algorithm to end this simply checks the length of the path versuses the number of nodes
-	// TODO improve this especially for when a node may not be able to reach all other nodes
 	for i := 0; i < len(nodes); i++ {
 		dijkstra(nodes, distances, &path)
 	}
 
-	// TODO find where the mysterious node is added and remove
 	distances.print()
 
-	return distances[destination].Distance
+	return distances[destination].Distance, distances
 }
 
 func main() {
 	output := ReadString("./test_data/example.csv")
-	// TODO Removing the last char due to a blank line. fix this so I dont have to do this
-	nodes := generateNodeMap(output[0 : len(output)-1])
+	nodes := generateNodeMap(output)
 
 	source := "Node0"
 	destination := "Node6"
-	fmt.Printf("Distance between %s and %s is: %d\n", source, destination, workflow(nodes, source, destination))
+	distance, distances := workflow(nodes, source, destination)
+	fmt.Printf("Distance between %s and %s is: %d\n", source, destination, distance)
 
-	createDiagram(nodes)
+	destination_distance := distances[destination]
+	createDiagram(nodes, &destination_distance)
 }

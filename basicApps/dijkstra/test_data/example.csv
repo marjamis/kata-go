@@ -7,3 +7,4 @@ Node3,Node4,10,false
 Node4,Node5,6,false
 Node4,Node6,2,false
 Node5,Node6,6,false
+NodeA,NodeB,7,false

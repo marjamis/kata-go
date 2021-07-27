@@ -51,22 +51,22 @@ type Distance struct {
 
 type distancemap map[string]Distance
 
-type SearchKV struct {
+type SortKV struct {
 	Key   string
 	Value int
 }
 
-type SearchKVs []SearchKV
+type SortKVs []SortKV
 
-func (s SearchKVs) Len() int {
+func (s SortKVs) Len() int {
 	return len(s)
 }
 
-func (s SearchKVs) Less(i, j int) bool {
+func (s SortKVs) Less(i, j int) bool {
 	return s[i].Value > s[j].Value
 }
 
-func (s SearchKVs) Swap(i, j int) {
+func (s SortKVs) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
@@ -189,11 +189,11 @@ func generateNodeMap(data string) map[string]Node {
 
 // shortestDistanceNode returns the name of the node with the smallest weight which hasn't been marked as visited
 func shortestDistanceNode(distances map[string]Distance) (string, bool) {
-	var kvs SearchKVs
+	var kvs SortKVs
 	for k, v := range distances {
 		// The only ones we care about here are nodes that haven't been marked as visited and have had their distance explicitly set
 		if !distances[k].Visited && distances[k].IsDistanceSet {
-			kvs = append(kvs, SearchKV{
+			kvs = append(kvs, SortKV{
 				Key:   k,
 				Value: v.Distance,
 			})
@@ -226,7 +226,6 @@ func (d distancemap) print() {
 
 // dijkstra is the core of the algorithm
 func dijkstra(nodes map[string]Node, distances map[string]Distance, path *[]string) {
-
 	// Loop through each node in the path (as they're already precalculated) to find the next node with the smallest weight.
 	for _, pathNode := range *path {
 		// For each node in the path we need to loop through it's edges to find the next node candidate with the smallest weight

@@ -1,15 +1,36 @@
 package main
 
 import (
+	"sort"
 	"testing"
+
+	fuzz "github.com/google/gofuzz"
+	"github.com/stretchr/testify/assert"
 )
 
-func testData() map[string]Node {
-	output := ReadString("./test_data/example.csv")
-	// TODO Removing the last char due to a blank line. fix this so I dont have to do this
-	return generateNodeMap(output[0 : len(output)-1])
-}
+func TestCustomSort(t *testing.T) {
+	terms := SortKVs{}
 
-func TestGeneral(t *testing.T) {
-	//TOD implement proper testing prior to future implementations, now that the algorithm is understood, for TDD
+	for i := 0; i < 30; i++ {
+		f := fuzz.New()
+		object := SortKV{}
+		f.Fuzz(&object)
+		terms = append(terms, object)
+	}
+
+	t.Run("Length Check", func(t *testing.T) {
+		assert.Len(t, terms, 30)
+	})
+
+	t.Run("Sort Output Check", func(t *testing.T) {
+		sort.Sort(sort.Reverse(terms))
+		allTrue := true
+		for i := 0; i < 30-1; i++ {
+			if !(terms[i].Value < terms[i+1].Value) {
+				allTrue = false
+				break
+			}
+		}
+		assert.True(t, allTrue)
+	})
 }

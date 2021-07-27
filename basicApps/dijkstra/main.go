@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -42,12 +43,32 @@ type Node struct {
 
 // Distance contains details about the a node from the source node
 type Distance struct {
-	Distance     int
-	ShortestPath []string
-	Visited      bool
+	Distance      int
+	ShortestPath  []string
+	Visited       bool
+	IsDistanceSet bool
 }
 
 type distancemap map[string]Distance
+
+type SearchKV struct {
+	Key   string
+	Value int
+}
+
+type SearchKVs []SearchKV
+
+func (s SearchKVs) Len() int {
+	return len(s)
+}
+
+func (s SearchKVs) Less(i, j int) bool {
+	return s[i].Value > s[j].Value
+}
+
+func (s SearchKVs) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
 
 func createDiagram(nodes map[string]Node, destinationDistance *Distance) {
 	image, err := diagram.New(diagram.Label("dijkstra Nodes"), diagram.Filename("dijkstra"))
@@ -168,28 +189,38 @@ func generateNodeMap(data string) map[string]Node {
 
 // shortestDistanceNode returns the name of the node with the smallest weight which hasn't been marked as visited
 func shortestDistanceNode(distances map[string]Distance) (string, bool) {
-	// TODO remove the arbitary large value
-	var smallestWeight int = 999999
-	var nodeNameOfSmallestWeight string
+	var kvs SearchKVs
 	for k, v := range distances {
-		if v.Distance < smallestWeight && !distances[k].Visited {
-			smallestWeight = v.Distance
-			nodeNameOfSmallestWeight = k
+		// The only ones we care about here are nodes that haven't been marked as visited and have had their distance explicitly set
+		if !distances[k].Visited && distances[k].IsDistanceSet {
+			kvs = append(kvs, SearchKV{
+				Key:   k,
+				Value: v.Distance,
+			})
 		}
 	}
 
-	var found bool
-	if smallestWeight != 999999 {
-		found = true
+	sort.Sort(sort.Reverse(kvs))
+
+	// Check that the array isn't empy and if it is return that the shortest distance wasn't found
+	if len(kvs) < 1 {
+		return "", false
 	}
 
-	return nodeNameOfSmallestWeight, found
+	return kvs[0].Key, distances[kvs[0].Key].IsDistanceSet
 }
 
 func (d distancemap) print() {
+	var keys []string
+
+	for k := range d {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
 	fmt.Println("Distance:")
-	for k, v := range d {
-		fmt.Printf("%s: %d V: %t\n", k, v.Distance, v.Visited)
+	for _, v := range keys {
+		fmt.Printf("%s: %d V: %t\n", v, d[v].Distance, d[v].Visited)
 	}
 }
 
@@ -197,21 +228,21 @@ func (d distancemap) print() {
 func dijkstra(nodes map[string]Node, distances map[string]Distance, path *[]string) {
 
 	// Loop through each node in the path (as they're already precalculated) to find the next node with the smallest weight.
-	for _, v := range *path {
+	for _, pathNode := range *path {
 		// For each node in the path we need to loop through it's edges to find the next node candidate with the smallest weight
-		for _, edge := range nodes[v].Edges {
+		for _, edge := range nodes[pathNode].Edges {
 			// If the destination node of the edge is already marked as visited we skip as this path has already been calculated
 			if !distances[edge.Destination.Name].Visited {
-				// If the weight of the current edge to this destination node is smaller than what we're currently tracking update to this shorter path
-				// else ignore as we have a shorter distance already
-				if edge.Weight+distances[v].Distance < distances[edge.Destination.Name].Distance {
-					distances[edge.Destination.Name] = Distance{
-						Distance:     edge.Weight + distances[v].Distance,
-						ShortestPath: append(distances[v].ShortestPath, edge.Destination.Name),
-						Visited:      distances[edge.Destination.Name].Visited,
-					}
+				// If the weight of the current edge to this destination node isn't set or is smaller than whats currently tracked it updates to the shorter path
+				// Otherwise it performs no additional operation as we already have set the shortest path details
+				proposed_distance := edge.Weight + distances[pathNode].Distance
+				if !distances[edge.Destination.Name].IsDistanceSet || (proposed_distance < distances[edge.Destination.Name].Distance) {
+					td := distances[edge.Destination.Name]
+					td.Distance = proposed_distance
+					td.ShortestPath = append(distances[pathNode].ShortestPath, edge.Destination.Name)
+					td.IsDistanceSet = true
+					distances[edge.Destination.Name] = td
 				}
-
 			}
 		}
 	}
@@ -222,11 +253,9 @@ func dijkstra(nodes map[string]Node, distances map[string]Distance, path *[]stri
 	// Checks if the shortest distance had been found, if it hasn't it means there are still nodes available BUT they may not be connected to the main set of nodes, i.e. not processed for this path
 	if foundShortest {
 		// Mark this shortest node as visited
-		distances[shortest] = Distance{
-			Distance:     distances[shortest].Distance,
-			ShortestPath: distances[shortest].ShortestPath,
-			Visited:      true,
-		}
+		td := distances[shortest]
+		td.Visited = true
+		distances[shortest] = td
 
 		// Add it to the path as a node that has already been checked for the smallest weight
 		*path = append(*path, shortest)
@@ -245,27 +274,23 @@ func workflow(nodes map[string]Node, source string, destination string) (int, di
 	// Create the map of distances. This tracks the distance from the source to the all other nodes through the execution
 	distances := distancemap{}
 	path := []string{source}
+
+	// Initialise the distancemap empty Distance objects per node
 	for k := range nodes {
-		// As this is the source it will have a distance of 0 and will be marked as visited
-		if k == source {
-			distances[k] = Distance{
-				Distance: 0,
-				ShortestPath: []string{
-					k,
-				},
-				Visited: true,
-			}
-		} else {
-			// TODO remove the arbitary large number method
-			// For all other nodes defaults are set
-			distances[k] = Distance{
-				Distance: 99999,
-			}
-		}
+		distances[k] = Distance{}
 	}
 
-	// This will loop through the algorthm to ensure all the nodes have a distance value from the source node
-	// As each node needs to be in the path for the algorithm to end this simply checks the length of the path versuses the number of nodes
+	// Set the defaults for the source node
+	distances[source] = Distance{
+		Distance: 0,
+		ShortestPath: []string{
+			source,
+		},
+		Visited:       true,
+		IsDistanceSet: true,
+	}
+
+	// This will loop through the algorthm to ensure all the nodes have a distance value from the source node, if they can
 	for i := 0; i < len(nodes); i++ {
 		dijkstra(nodes, distances, &path)
 	}
@@ -282,7 +307,7 @@ func main() {
 	source := "Node0"
 	destination := "Node6"
 	distance, distances := workflow(nodes, source, destination)
-	fmt.Printf("Distance between %s and %s is: %d\n", source, destination, distance)
+	fmt.Printf("Distance between %s and %s is: %d with the shortest path being: %+v\n", source, destination, distance, distances[destination].ShortestPath)
 
 	destination_distance := distances[destination]
 	createDiagram(nodes, &destination_distance)

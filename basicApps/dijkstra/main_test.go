@@ -34,3 +34,48 @@ func TestCustomSort(t *testing.T) {
 		assert.True(t, allTrue)
 	})
 }
+
+func BenchmarkStringFromBuffer(b *testing.B) {
+	terms := SortKVs{}
+
+	for i := 0; i < 30; i++ {
+		f := fuzz.New()
+		object := SortKV{}
+		f.Fuzz(&object)
+		terms = append(terms, object)
+	}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		temp := terms
+		sort.Sort(sort.Reverse(temp))
+	}
+}
+
+func TestDijkstra(t *testing.T) {
+	tests := []struct {
+		filename    string
+		expected    int
+		source      string
+		destination string
+	}{
+		{
+			"./test_data/example.csv",
+			19,
+			"Node0",
+			"Node6",
+		},
+		{
+			"./test_data/massive.csv",
+			1,
+			"Node0",
+			"Node3",
+		},
+	}
+
+	for _, v := range tests {
+		nodes := generateNodeMap(ReadString(v.filename))
+		distance, _ := workflow(nodes, v.source, v.destination)
+		assert.Equal(t, v.expected, distance)
+	}
+}

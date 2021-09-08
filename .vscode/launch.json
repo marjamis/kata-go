@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "dijkstra testing",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "program": "${workspaceRoot}/basicApps/dijkstra/main_test.go"
+        },
+        {
             "name": "dijkstra test",
             "type": "go",
             "request": "launch",

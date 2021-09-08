@@ -1,0 +1,4 @@
+Node0,Node1,2,true
+Node0,Node2,6,true
+Node1,Node3,5,true
+Node3,Node0,1,false

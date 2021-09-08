@@ -88,7 +88,8 @@ func createDiagram(nodes map[string]Node, destinationDistance *Distance) {
 			if _, ok := connectionAlreadyExists[edge.Source.Name+"To"+edge.Destination.Name]; !ok {
 				image.Connect(image_nodes[edge.Source.Name], image_nodes[edge.Destination.Name], func(o *diagram.EdgeOptions) {
 					o.Forward = true
-					o.Reverse = true
+					// If the edge is directed it means the reverse shouldn't be automatically applied. If it's not directed then a reverse should be applied
+					o.Reverse = !edge.Directed
 					o.Label = strconv.Itoa(edge.Weight)
 				})
 				connectionAlreadyExists[edge.Source.Name+"To"+edge.Destination.Name] = true
@@ -167,7 +168,7 @@ func generateNodeMap(data string) map[string]Node {
 
 		// FIXME improve the logic on this so in can be unidirectional and different weights
 		// Creates the edge based on the inputs read from the string data
-		edge := Edge{
+		newEdge := Edge{
 			Weight:      edge.Weight,
 			Source:      nodes[edge.Source],
 			Destination: nodes[edge.Destination],
@@ -175,13 +176,25 @@ func generateNodeMap(data string) map[string]Node {
 		}
 
 		// Appends the edge to the source and destination node as the path is usable in both directions
-		node := nodes[edge.Source.Name]
-		node.Edges = append(node.Edges, edge)
-		nodes[edge.Source.Name] = node
+		node := nodes[edge.Source]
+		node.Edges = append(node.Edges, newEdge)
+		nodes[edge.Source] = node
 
-		node = nodes[edge.Destination.Name]
-		node.Edges = append(node.Edges, edge)
-		nodes[edge.Destination.Name] = node
+		if !edge.Directed {
+
+			// Creates the edge based on the inputs read from the string data
+			newEdge = Edge{
+				Weight: edge.Weight,
+				// This is swapped to ensure that if the edge isn't directed the reverse edge is applied to the correct source/destination, i.e. the opposite way
+				Source:      nodes[edge.Destination],
+				Destination: nodes[edge.Source],
+				Directed:    edge.Directed,
+			}
+
+			node = nodes[edge.Destination]
+			node.Edges = append(node.Edges, newEdge)
+			nodes[edge.Destination] = node
+		}
 	}
 
 	return nodes

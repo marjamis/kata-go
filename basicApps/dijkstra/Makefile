@@ -13,10 +13,12 @@ helper: # Adapted from: https://marmelab.com/blog/2016/02/29/auto-documented-mak
 command: clean
 	go run main.go 
 	cd go-diagrams && dot -Tpng dijkstra.dot > dijkstra.png
+	code go-diagrams/dijkstra.png
 
 build: ## Builds the application
 
-test: build ## Builds and then runs tests against the application
+test: ## Builds and then runs tests against the application
+	go test -v main.go main_test.go
 
 run: ## Runs the prod version of the application
 	$(MAKE) command

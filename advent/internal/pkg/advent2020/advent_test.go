@@ -18,7 +18,6 @@ func init() {
 }
 
 func TestDay1(t *testing.T) {
-	t.Skip()
 	var expenseReport = []int{
 		1721,
 		979,
@@ -37,7 +36,6 @@ func TestDay1(t *testing.T) {
 }
 
 func TestDay2(t *testing.T) {
-	t.Skip()
 	var passwordPolicies = []string{
 		"1-3 a: abcde",
 		"1-3 b: cdefg",
@@ -69,7 +67,6 @@ func TestDay2(t *testing.T) {
 }
 
 func TestDay3(t *testing.T) {
-	t.Skip()
 	var tobMap = [][]string{
 		{".", ".", "#", "#", ".", ".", ".", ".", ".", ".", "."},
 		{"#", ".", ".", ".", "#", ".", ".", ".", "#", ".", "."},
@@ -139,7 +136,6 @@ func TestDay3(t *testing.T) {
 }
 
 func TestDay4(t *testing.T) {
-	t.Skip()
 	var passportData = `ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
 
@@ -191,7 +187,6 @@ iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719`
 }
 
 func TestDay5(t *testing.T) {
-	t.Skip()
 	tests := []struct {
 		input    string
 		expected int
@@ -259,7 +254,6 @@ func TestDay5(t *testing.T) {
 }
 
 func TestDay6(t *testing.T) {
-	t.Skip()
 	var declartionForms = `abc
 
 a
@@ -298,7 +292,6 @@ lpjafmzv
 }
 
 func TestDay7(t *testing.T) {
-	t.Skip()
 	bagName := "shiny gold"
 	rules := `light red bags contain 1 bright white bag, 2 muted yellow bags.
 dark orange bags contain 3 bright white bags, 4 muted yellow bags.
@@ -329,7 +322,6 @@ dark violet bags contain no other bags.`
 }
 
 func TestDay8(t *testing.T) {
-	t.Skip()
 	programData := []string{
 		"nop +0",
 		"acc +1",
@@ -352,7 +344,6 @@ func TestDay8(t *testing.T) {
 }
 
 func TestDay9(t *testing.T) {
-	t.Skip()
 	data := []int{
 		35,
 		20,
@@ -386,7 +377,6 @@ func TestDay9(t *testing.T) {
 }
 
 func TestDay10(t *testing.T) {
-	t.Skip()
 	testData1 := []int{
 		16,
 		10,
@@ -459,7 +449,6 @@ func TestDay10(t *testing.T) {
 }
 
 func TestDay11(t *testing.T) {
-	t.Skip()
 	testSeating := [][]rune{
 		{'L', '.', 'L', 'L', '.', 'L', 'L', '.', 'L', 'L'},
 		{'L', 'L', 'L', 'L', 'L', 'L', 'L', '.', 'L', 'L'},
@@ -483,7 +472,6 @@ func TestDay11(t *testing.T) {
 }
 
 func TestDay12(t *testing.T) {
-	t.Skip()
 	navigationInstructions := []string{
 		"F10",
 		"N3",
@@ -560,7 +548,6 @@ func TestDay12(t *testing.T) {
 }
 
 func TestDay13(t *testing.T) {
-	t.Skip()
 	testdata := []string{
 		"939",
 		"7,13,x,x,59,x,31,19",
@@ -588,7 +575,6 @@ func TestDay13(t *testing.T) {
 }
 
 func TestDay14(t *testing.T) {
-	t.Skip()
 	testdata := `mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
 	mem[8] = 11
 	mem[7] = 101
@@ -600,7 +586,6 @@ mask = 111XXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
 mem[8] = 0`
 
 	t.Run("Testing V1 of the mask", func(t *testing.T) {
-		t.Skip()
 		assert.Equal(t, 165, Day14(testdata))
 		assert.Equal(t, 60129542309, Day14(testdata2))
 	})
@@ -616,7 +601,6 @@ mem[26] = 1`
 }
 
 func TestDay15(t *testing.T) {
-	t.Skip()
 	tests := []struct {
 		input         []int
 		expected2020  int
@@ -676,7 +660,6 @@ func TestDay15(t *testing.T) {
 }
 
 func TestDay16(t *testing.T) {
-	t.Skip()
 	testdata := `class: 1-3 or 5-7
 row: 6-11 or 33-44
 seat: 13-40 or 45-50
@@ -707,11 +690,10 @@ nearby tickets:
 5,14,9,10
 99,99,99,99`
 
-	assert.Equal(t, []string{"row", "departure class", "departure seat", "departure running"}, Day16Part2(testdata2))
+	assert.Equal(t, int64(1560), Day16Part2(testdata2))
 }
 
 func TestDay17(t *testing.T) {
-	t.Skip()
 	testdata := `.#.
 ..#
 ###`
@@ -720,7 +702,6 @@ func TestDay17(t *testing.T) {
 }
 
 func TestDay18(t *testing.T) {
-	t.Skip()
 	tests := []struct {
 		input    string
 		expected int
@@ -756,7 +737,6 @@ func TestDay18(t *testing.T) {
 	}
 
 	t.Run("Calculate without precedence order", func(t *testing.T) {
-		t.Skip()
 		for _, test := range tests {
 			assert.Equal(t, test.expected, Day18(test.input, false))
 		}
@@ -768,7 +748,6 @@ func TestDay18(t *testing.T) {
 	}
 
 	t.Run("Find the sum of all above data", func(t *testing.T) {
-		t.Skip()
 		assert.Equal(t, 627294723, Day18Wrapper(inputs))
 	})
 
@@ -840,7 +819,6 @@ func TestDay18(t *testing.T) {
 }
 
 func TestDay19(t *testing.T) {
-	t.Skip()
 	testdata := `0: 4 1 5
 1: 2 3 | 3 2
 2: 4 4 | 5 5
@@ -930,7 +908,6 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba`
 }
 
 func TestDay20(t *testing.T) {
-	t.Skip()
 	testdata := `Tile 2311:
 ..##.#..#.
 ##..#.....
@@ -1040,9 +1017,7 @@ Tile 3079:
 ..#.###...`
 
 	t.Run("Rotations", func(t *testing.T) {
-		t.Skip()
 		t.Run("Testing that the right (and left) rotations works in a full loop", func(t *testing.T) {
-			t.Skip()
 			testRotateExpected1Right := day20Tile{"1", [][]rune{
 				{7, 4, 1},
 				{8, 5, 2},
@@ -1114,7 +1089,6 @@ Tile 3079:
 	})
 
 	t.Run("Fingerprinting", func(t *testing.T) {
-		t.Skip()
 		testInput := day20Tile{"1", [][]rune{
 			{'#', '.', '.'},
 			{'.', '.', '#'},
@@ -1185,7 +1159,6 @@ Tile 3079:
 }
 
 func TestDay22(t *testing.T) {
-	t.Skip()
 	testdata := `Player 1:
 9
 2
@@ -1217,7 +1190,7 @@ Player 2:
 }
 
 func TestDay23(t *testing.T) {
-	//t.Skip()
+	t.Skip()
 	testdata := `389125467`
 
 	t.Run("", func(t *testing.T) {

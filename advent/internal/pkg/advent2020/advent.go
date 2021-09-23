@@ -143,7 +143,7 @@ func day3Counter(tobMap [][]string, tobMovement ToboganMovement) (count int) {
 	var x int64
 	var y int64
 	for y < (int64(len(tobMap)) - 1) {
-		// fmt.Printf("x: %d - tobMove.X: %d - len(tobMap): %d\n", x, tobMovement.X, int64(len(tobMap)))
+		log.Debug("x: %d - tobMove.X: %d - len(tobMap): %d\n", x, tobMovement.X, int64(len(tobMap)))
 		if x+tobMovement.X >= int64(len(tobMap[0])) {
 			x = (x + tobMovement.X) - int64(len(tobMap[0]))
 		} else {
@@ -152,12 +152,10 @@ func day3Counter(tobMap [][]string, tobMovement ToboganMovement) (count int) {
 
 		y += tobMovement.Y
 
-		// fmt.Printf("X: %d, Y: %d\n", x, y)
 		if tobMap[y][x] == "#" {
 			count++
 		}
 	}
-	// fmt.Println()
 
 	return
 }
@@ -268,7 +266,6 @@ func Day4(passportData string, advancedValidation bool) (count int) {
 	}
 
 	for _, passport := range strings.Split(passportData, "\n\n") {
-		// fmt.Printf("Index: %d, Passport: %s\n", index, passport)
 		rfCheck := 0
 	out:
 		for _, rf := range requiredFields {
@@ -304,7 +301,7 @@ func day5Parser(lower int, upper int, direction rune) (int, int) {
 
 func day5Wrapper(lower int, upper int, data string) int {
 	for _, d := range data {
-		// fmt.Printf("Index: %d, Lower: %d, Upper: %d\n", i+1, l, u)
+		log.Debug("Index: %d, Lower: %d, Upper: %d\n", i+1, l, u)
 		lower, upper = day5Parser(lower, upper, d)
 	}
 
@@ -332,14 +329,13 @@ func Day5(seatLocations []string) (id int) {
 func Day5Part2(seatLocations []string) (id int) {
 	seatIDs := []int{}
 	for _, seatLocation := range seatLocations {
-		// fmt.Printf("Seat ID: %d", day5SeatID(seatLocation))
 		seatIDs = append(seatIDs, day5SeatID(seatLocation))
 	}
 	sort.Sort(sort.IntSlice(seatIDs))
 
 	seat := seatIDs[0] - 1
 	for _, seatID := range seatIDs {
-		// fmt.Printf("Index: %d, SeatID: %d\n", index, seatID)
+		log.Debug("Index: %d, SeatID: %d\n", index, seatID)
 		if (seatID - seat) > 1 {
 			id = seatID - 1
 			break
@@ -408,7 +404,6 @@ const (
 
 func day7SearchIsIn(bags map[string]day7Bag, findBag string, fbs *[]string) {
 	for _, bag := range bags[findBag].IsIn {
-		// fmt.Printf("Bag: %s\n", bag)
 		*fbs = append(*fbs, bag)
 		day7SearchIsIn(bags, bag, fbs)
 	}
@@ -418,8 +413,6 @@ func day7SearchIsIn(bags map[string]day7Bag, findBag string, fbs *[]string) {
 
 func day7SearchContains(bags map[string]day7Bag, findBag string) (count int) {
 	for _, bag := range bags[findBag].Contains {
-		// fmt.Printf("Bag: %s - Count: %d\n", bag.key, bag.numberOf)
-
 		if bag.numberOf != 0 {
 			count += bag.numberOf + (bag.numberOf * day7SearchContains(bags, bag.key))
 		}
@@ -510,9 +503,8 @@ const (
 func day8ExecuteProgram(operations []day8OpData) (acc int, ok bool) {
 	pos := 0
 	for pos != len(operations) {
-		// fmt.Printf("Opcode: %s - Direction: %d\n", changedOperations[pos].opcode, changedOperations[pos].direction)
+		log.Debug("Opcode: %s - Direction: %d\n", changedOperations[pos].opcode, changedOperations[pos].direction)
 		if operations[pos].visited {
-			// fmt.Println("Exiting...")
 			break
 		}
 
@@ -557,15 +549,12 @@ func Day8(programData []string, rotateClockwise bool) (acc int) {
 			copy(changedOperations, operations)
 
 			if changedOperations[index].opcode == day8OpCodenop || changedOperations[index].opcode == day8OpCodejmp {
-				// fmt.Printf("Before: %s\n", changedOperations[index].opcode)
 				if changedOperations[index].opcode == day8OpCodenop {
 					changedOperations[index].opcode = day8OpCodejmp
 				} else if changedOperations[index].opcode == day8OpCodejmp {
 					changedOperations[index].opcode = day8OpCodenop
 				}
-				// fmt.Printf("After: %s\n", changedOperations[index].opcode)
 			} else {
-				// fmt.Println("No change skipping...")
 				continue
 			}
 
@@ -666,17 +655,11 @@ func Day10(adaptors []int) int {
 		for index := range adaptors[adaptor:checkEnd] {
 			log.Debugf("Current Joltage: %d", currentJoltage)
 			if adaptors[adaptor+index] == currentJoltage+1 {
-				// log.Debug("Ones")
 				currentJoltage++
 				ones++
 				break
 			}
-			// if adaptors[adaptor+index] == currentJoltage+2 {
-			// 	currentJoltage += 2
-			// 	break
-			// }
 			if adaptors[adaptor+index] == currentJoltage+3 {
-				// log.Debug("Threes")
 				currentJoltage += 3
 				threes++
 				break
@@ -715,7 +698,6 @@ func Day10Part2(adaptors []int) int {
 		}
 		nodes = append(nodes, node)
 	}
-	//TODO optimise the above by removing uncessary loop i.e. combine the top and below into one for the calculated.
 
 	// Create a map of adaptors which return the number possible other adaptors it can be connected to.
 	adaptorToBranchesMap := map[int]int{}
@@ -742,10 +724,6 @@ func Day10Part2(adaptors []int) int {
 		orderedKeys = append(orderedKeys, k)
 	}
 	sort.Sort(sort.IntSlice(orderedKeys))
-
-	// for _, key := range orderedKeys {
-	// 	log.Debugf("key=%d value=%d", key, adaptorToBranchesMap[key])
-	// }
 
 	// Returns the data from the first key, which is the root node. This contains the number of all branches, hence combinations that exist for the given data.
 	return adaptorToBranchesMap[orderedKeys[0]]
@@ -877,14 +855,6 @@ func Day11(seatMap [][]rune, ruleOption Day11RuleOption) (occupiedSeats int) {
 			break
 		}
 	}
-
-	// Display the table neatly
-	// for _, row := range seatMap {
-	// 	for _, col := range row {
-	// 		fmt.Printf(string(col))
-	// 	}
-	// 	fmt.Println()
-	// }
 
 	return
 }
@@ -1509,7 +1479,7 @@ func day16FieldToTicketsValid(field day16FieldData, ticketData []int64) bool {
 }
 
 // Day16Part2 entry function
-func Day16Part2(ticketData string) (path []string) {
+func Day16Part2(ticketData string) (errorRate int64) {
 	splits := strings.Split(ticketData, "\n\n")
 	dataFields := strings.Split(splits[0], "\n")
 	myTicket := strings.Split(splits[1], "\n")[1]
@@ -1615,8 +1585,7 @@ func Day16Part2(ticketData string) (path []string) {
 
 	log.Infof("Multi is: %d", multi)
 
-	log.Debug(myTicket)
-	return []string{}
+	return multi
 }
 
 type energySource [][][]bool
@@ -1627,7 +1596,6 @@ func (array energySource) day17Print() {
 		log.Debugf("Z: %d", zs)
 		zs++
 		for _, y := range z {
-			// log.Debugf("Z: %d Y: %+v", i, y)
 			for _, x := range y {
 				var v rune
 				if x {
@@ -1635,9 +1603,7 @@ func (array energySource) day17Print() {
 				} else {
 					v = '.'
 				}
-				fmt.Printf("%c", v)
 			}
-			fmt.Println()
 		}
 	}
 }
@@ -2478,7 +2444,6 @@ func day22Play(p1, p2 []int64, recursive bool, gamenumber int) ([]int64, []int64
 					p2c[i] = p2[i]
 				}
 
-				// TODO fix game number
 				tp1, tp2 := day22Play(p1c, p2c, recursive, gamenumber+1)
 
 				// Based on the length of the returnned values will determine who will win this round.

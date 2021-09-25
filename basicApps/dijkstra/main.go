@@ -5,6 +5,7 @@ Adapted from: https://www.freecodecamp.org/news/dijkstras-shortest-path-algorith
 */
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -16,6 +17,9 @@ import (
 	"github.com/blushft/go-diagrams/nodes/generic"
 )
 
+// TODO go through each function and see what I can clean
+
+// ReadString will take a filename and return the contents as a string
 func ReadString(file string) string {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -49,13 +53,18 @@ type Distance struct {
 	IsDistanceSet bool
 }
 
+// TODO can the distancemap be merged into a node?
 type distancemap map[string]Distance
 
+// TODO rename this variable as what is SortKV?
+
+// SortKV is the struct for the custom search of shortest distances for the shortest path
 type SortKV struct {
 	Key   string
 	Value int
 }
 
+// SortKVs is an array of the struct for the custom search for the shortest path
 type SortKVs []SortKV
 
 func (s SortKVs) Len() int {
@@ -76,9 +85,9 @@ func createDiagram(nodes map[string]Node, destinationDistance *Distance) {
 		log.Fatal(err)
 	}
 
-	image_nodes := map[string]*diagram.Node{}
+	imageNodes := map[string]*diagram.Node{}
 	for k := range nodes {
-		image_nodes[k] = generic.Place.Datacenter().Label(k)
+		imageNodes[k] = generic.Place.Datacenter().Label(k)
 	}
 
 	connectionAlreadyExists := map[string]bool{}
@@ -86,7 +95,7 @@ func createDiagram(nodes map[string]Node, destinationDistance *Distance) {
 		for _, edge := range v.Edges {
 			// FIXME this check will need improvement when multi-directions are implemented
 			if _, ok := connectionAlreadyExists[edge.Source.Name+"To"+edge.Destination.Name]; !ok {
-				image.Connect(image_nodes[edge.Source.Name], image_nodes[edge.Destination.Name], func(o *diagram.EdgeOptions) {
+				image.Connect(imageNodes[edge.Source.Name], imageNodes[edge.Destination.Name], func(o *diagram.EdgeOptions) {
 					o.Forward = true
 					// If the edge is directed it means the reverse shouldn't be automatically applied. If it's not directed then a reverse should be applied
 					o.Reverse = !edge.Directed
@@ -97,14 +106,12 @@ func createDiagram(nodes map[string]Node, destinationDistance *Distance) {
 		}
 	}
 
-	// NOTE Add the distancemap.print() output when supported
-
 	// Placing the line for shortest path
 	for i := range destinationDistance.ShortestPath[:len(destinationDistance.ShortestPath)-1] {
 		s := destinationDistance.ShortestPath[i]
 		d := destinationDistance.ShortestPath[i+1]
 
-		image.Connect(image_nodes[s], image_nodes[d], func(o *diagram.EdgeOptions) {
+		image.Connect(imageNodes[s], imageNodes[d], func(o *diagram.EdgeOptions) {
 			o.Color = "#ff0000"
 		})
 	}
@@ -247,10 +254,10 @@ func dijkstra(nodes map[string]Node, distances map[string]Distance, path *[]stri
 			if !distances[edge.Destination.Name].Visited {
 				// If the weight of the current edge to this destination node isn't set or is smaller than whats currently tracked it updates to the shorter path
 				// Otherwise it performs no additional operation as we already have set the shortest path details
-				proposed_distance := edge.Weight + distances[pathNode].Distance
-				if !distances[edge.Destination.Name].IsDistanceSet || (proposed_distance < distances[edge.Destination.Name].Distance) {
+				proposedDistance := edge.Weight + distances[pathNode].Distance
+				if !distances[edge.Destination.Name].IsDistanceSet || (proposedDistance < distances[edge.Destination.Name].Distance) {
 					td := distances[edge.Destination.Name]
-					td.Distance = proposed_distance
+					td.Distance = proposedDistance
 					td.ShortestPath = append(distances[pathNode].ShortestPath, edge.Destination.Name)
 					td.IsDistanceSet = true
 					distances[edge.Destination.Name] = td
@@ -274,13 +281,13 @@ func dijkstra(nodes map[string]Node, distances map[string]Distance, path *[]stri
 	}
 }
 
-func workflow(nodes map[string]Node, source string, destination string) (int, distancemap) {
+func workflow(nodes map[string]Node, source string, destination string) distancemap {
 	// Simple check on if both the source and destination exist within the nodemap
 	_, ok := nodes[source]
 	_, ok2 := nodes[destination]
 	if !ok || !ok2 {
 		fmt.Println("Source or detination not available in provided node map")
-		return -1, nil
+		return nil
 	}
 
 	// Create the map of distances. This tracks the distance from the source to the all other nodes through the execution
@@ -307,20 +314,24 @@ func workflow(nodes map[string]Node, source string, destination string) (int, di
 		dijkstra(nodes, distances, &path)
 	}
 
-	distances.print()
-
-	return distances[destination].Distance, distances
+	return distances
 }
 
 func main() {
-	output := ReadString("./test_data/example.csv")
-	nodes := generateNodeMap(output)
+	filename := flag.String("filename", "./test_data/example.csv", "specify the file of node data")
+	sourceNode := flag.String("source-node", "Node0", "specify the source node")
+	destinationNode := flag.String("destination-node", "Node6", "specify the destination node")
 
-	source := "Node0"
-	destination := "Node6"
-	distance, distances := workflow(nodes, source, destination)
-	fmt.Printf("Distance between %s and %s is: %d with the shortest path being: %+v\n", source, destination, distance, distances[destination].ShortestPath)
+	nodes := generateNodeMap(ReadString(*filename))
+	distances := workflow(nodes, *sourceNode, *destinationNode)
 
-	destination_distance := distances[destination]
-	createDiagram(nodes, &destination_distance)
+	if distances == nil {
+		fmt.Println("Application can't proceed due to error")
+		return
+	}
+	distances.print()
+	fmt.Printf("Distance between %s and %s is: %d with the shortest path being: %+v\n", *sourceNode, *destinationNode, distances[*destinationNode].Distance, distances[*destinationNode].ShortestPath)
+
+	destinationDistance := distances[*destinationNode]
+	createDiagram(nodes, &destinationDistance)
 }

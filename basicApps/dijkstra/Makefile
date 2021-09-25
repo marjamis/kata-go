@@ -11,7 +11,7 @@ helper: # Adapted from: https://marmelab.com/blog/2016/02/29/auto-documented-mak
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 command: clean
-	go run main.go 
+	go run main.go -f=./test_data/massive.csv -s=Node1 -d=Node12
 	cd go-diagrams && dot -Tpng dijkstra.dot > dijkstra.png
 	code go-diagrams/dijkstra.png
 

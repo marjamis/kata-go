@@ -70,8 +70,8 @@ func TestDijkstra(t *testing.T) {
 
 	for _, v := range tests {
 		nodes := generateNodeMap(ReadString(v.filename))
-		distances := workflow(nodes, v.source, v.destination)
-		assert.Equal(t, v.expected, distances[v.destination].Distance)
+		workflow(nodes, v.source, v.destination)
+		assert.Equal(t, v.expected, nodes[v.destination].TraversalDetails.Distance)
 	}
 }
 
@@ -238,12 +238,12 @@ func TestDijkstraMassiveTest(t *testing.T) {
 		{"Node12", "Node12", 0},
 	}
 
-	nodes := generateNodeMap(ReadString("./test_data/massive.csv"))
 	for _, v := range tests {
 		t.Run(fmt.Sprintf("Source: %s Destination %s", v.source, v.destination), func(t *testing.T) {
-			distances := workflow(nodes, v.source, v.destination)
-			assert.True(t, distances[v.destination].Visited)
-			assert.Equal(t, v.expected, distances[v.destination].Distance)
+			nodes := generateNodeMap(ReadString("./test_data/massive.csv"))
+			workflow(nodes, v.source, v.destination)
+			assert.True(t, nodes[v.destination].TraversalDetails.Visited)
+			assert.Equal(t, v.expected, nodes[v.destination].TraversalDetails.Distance)
 		})
 	}
 }
@@ -268,18 +268,19 @@ func TestDijkstraMissingRoutes(t *testing.T) {
 		{"Node13", "Node12", 0},
 	}
 
-	nodes := generateNodeMap(ReadString("./test_data/massive.csv"))
 	for _, v := range tests {
 		t.Run(fmt.Sprintf("Source: %s Destination %s", v.source, v.destination), func(t *testing.T) {
-			distances := workflow(nodes, v.source, v.destination)
-			assert.False(t, distances[v.destination].Visited)
-			assert.Equal(t, v.expected, distances[v.destination].Distance)
+			nodes := generateNodeMap(ReadString("./test_data/massive.csv"))
+			workflow(nodes, v.source, v.destination)
+			assert.False(t, nodes[v.destination].TraversalDetails.Visited)
+			assert.Equal(t, v.expected, nodes[v.destination].TraversalDetails.Distance)
 		})
 	}
 
 	t.Run("Check that even if a node doesn't have a path to any destination it still is visited itself", func(t *testing.T) {
-		distances := workflow(nodes, "Node13", "Node1")
-		assert.True(t, distances["Node13"].Visited)
-		assert.Equal(t, 0, distances["Node13"].Distance)
+		nodes := generateNodeMap(ReadString("./test_data/massive.csv"))
+		workflow(nodes, "Node13", "Node1")
+		assert.True(t, nodes["Node13"].TraversalDetails.Visited)
+		assert.Equal(t, 0, nodes["Node13"].TraversalDetails.Distance)
 	})
 }

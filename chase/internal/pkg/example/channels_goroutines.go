@@ -1,4 +1,4 @@
-package main
+package example
 
 import (
 	"fmt"
@@ -33,7 +33,7 @@ func responseTime(c chan<- urlInfo, stop chan<- bool, url string) {
 	}
 }
 
-func main() {
+func ChannelsRun() {
 	// urls := make([]string, 3)
 	urls := []string{
 		"https://www.australia.gov.au",
@@ -78,4 +78,8 @@ func main() {
 			}
 		}
 	}
+}
+
+func init() {
+	GetMyExamples().Add("channels", ChannelsRun)
 }

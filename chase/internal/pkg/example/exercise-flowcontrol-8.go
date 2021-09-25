@@ -1,4 +1,4 @@
-package main
+package example
 
 import (
 	"fmt"
@@ -20,7 +20,11 @@ func sqrt(x float64) float64 {
 	return z
 }
 
-func main() {
+func FlowControlRun() {
 	// Exercise details can be found at https://tour.golang.org/flowcontrol/8
 	fmt.Println(sqrt(2))
+}
+
+func init() {
+	GetMyExamples().Add("flow_control", FlowControlRun)
 }

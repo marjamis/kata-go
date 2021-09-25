@@ -1,4 +1,4 @@
-package main
+package example
 
 import (
 	"fmt"
@@ -84,9 +84,13 @@ func mapLoop() {
 	}
 }
 
-func main() {
+func LoopsRun() {
 	formatting.ExampleWrapper("Normal count loop", countLoop)
 	formatting.ExampleWrapper("Infinite Loop", infiniteLoop)
 	formatting.ExampleWrapper("Arrays", arrayLoop)
 	formatting.ExampleWrapper("Map i.e. Hash Table", mapLoop)
+}
+
+func init() {
+	GetMyExamples().Add("loops", LoopsRun)
 }

@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "chase - Run Application",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceRoot}/chase/main.go"
+        },
+        {
             "name": "dijkstra - Unit Tests",
             "type": "go",
             "request": "launch",

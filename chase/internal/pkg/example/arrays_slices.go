@@ -1,4 +1,4 @@
-package main
+package example
 
 import (
 	"fmt"
@@ -95,10 +95,14 @@ func structs() {
 }
 
 // Adapted from: tour.golang.org
-func main() {
+func ArraySlicesRun() {
 	// Arrays are fixed sizes and types, slices are a dynamicly sized, flexible view of the elements in an array. This allows for slices to be created with subsets of the array it's referencing. Does not store data but describes data of an array. Modifying slices data will modify the underlying array data meaning two slices of the same array will cause changes in each others view.
 	formatting.ExampleWrapper("Arrays", arrays)
 	formatting.ExampleWrapper("Ranges with slices ", ranges)
 	formatting.ExampleWrapper("Appending with slices", appending)
 	formatting.ExampleWrapper("Arrays & slices with custom types", structs)
+}
+
+func init() {
+	GetMyExamples().Add("array_slices", ArraySlicesRun)
 }

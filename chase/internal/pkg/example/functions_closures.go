@@ -1,4 +1,4 @@
-package main
+package example
 
 import (
 	"fmt"
@@ -78,9 +78,13 @@ func recursiveFunction() {
 	recurse(count)
 }
 
-func main() {
+func ClosuresRun() {
 	formatting.ExampleWrapper("Anonymous Function", anonymous)
 	formatting.ExampleWrapper("Clousure", closures)
 	formatting.ExampleWrapper("Nested Function", nestedFunction)
 	formatting.ExampleWrapper("Recursive Function", recursiveFunction)
+}
+
+func init() {
+	GetMyExamples().Add("closures", ClosuresRun)
 }

@@ -1,4 +1,4 @@
-package main
+package example
 
 import "fmt"
 
@@ -44,7 +44,7 @@ func getDetails(r Robot) string {
 	return r.getDetails()
 }
 
-func main() {
+func InterfaceRun() {
 	robots := []Robot{
 		&T1000{
 			Position: "Earth",
@@ -71,4 +71,8 @@ func main() {
 		// Both work and I can see some use-cases for each but I need to investigate further in the future for additional details
 		fmt.Printf("%s and is located on: %s\n", getDetails(robot), robot.getPosition())
 	}
+}
+
+func init() {
+	GetMyExamples().Add("interfaces", InterfaceRun)
 }

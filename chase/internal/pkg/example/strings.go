@@ -1,4 +1,4 @@
-package main
+package example
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func main() {
+func StringsRun() {
 	var buf bytes.Buffer
 	for i := 0; i < 500; i++ {
 		buf.WriteString("z")
@@ -26,4 +26,8 @@ func main() {
 	fmt.Println(strings.ToUpper(string))
 	fmt.Println(strings.Replace(string, "seaside", "bar", -1))
 	fmt.Println(strings.Index(string, "the"))
+}
+
+func init() {
+	GetMyExamples().Add("strings", StringsRun)
 }

@@ -8,11 +8,11 @@ Also useful for storing these sample common concepts which I can revisit when I 
 
 | Badges |
 | --- |
-| [![Go Report Card - advent](https://goreportcard.com/badge/github.com/marjamis/kata-go/advent)](https://goreportcard.com/badge/github.com/marjamis/kata-go/advent) |
-| [![Go Report Card - chase](https://goreportcard.com/badge/github.com/marjamis/kata-go/chase)](https://goreportcard.com/badge/github.com/marjamis/kata-go/chase) |
-| [![Go Report Card - aws-sdk-credentials](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/aws-sdk-credentials)](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/aws-sdk-credentials) |
-| [![Go Report Card - CSV2DDB](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/CSV2DDB)](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/CSV2DDB) |
-| [![Go Report Card - dijkstra](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/dijkstra)](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/dijkstra) |
-| [![Go Report Card - markdownTemplates](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/markdownTemplates)](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/markdownTemplates) |
-| [![Go Report Card - proceduralEngine](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/proceduralEngine)](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/proceduralEngine) |
-| [![Go Report Card - webassembly](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/webassembly)](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/webassembly) |
+| [![Go Report Card - advent](https://goreportcard.com/badge/github.com/marjamis/kata-go/advent)](https://goreportcard.com/report/github.com/marjamis/kata-go/advent) |
+| [![Go Report Card - chase](https://goreportcard.com/badge/github.com/marjamis/kata-go/chase)](https://goreportcard.com/report/github.com/marjamis/kata-go/chase) |
+| [![Go Report Card - aws-sdk-credentials](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/aws-sdk-credentials)](https://goreportcard.com/report/github.com/marjamis/kata-go/basicApps/aws-sdk-credentials) |
+| [![Go Report Card - CSV2DDB](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/CSV2DDB)](https://goreportcard.com/report/github.com/marjamis/kata-go/basicApps/CSV2DDB) |
+| [![Go Report Card - dijkstra](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/dijkstra)](https://goreportcard.com/report/github.com/marjamis/kata-go/basicApps/dijkstra) |
+| [![Go Report Card - markdownTemplates](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/markdownTemplates)](https://goreportcard.com/report/github.com/marjamis/kata-go/basicApps/markdownTemplates) |
+| [![Go Report Card - proceduralEngine](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/proceduralEngine)](https://goreportcard.com/report/github.com/marjamis/kata-go/basicApps/proceduralEngine) |
+| [![Go Report Card - webassembly](https://goreportcard.com/badge/github.com/marjamis/kata-go/basicApps/webassembly)](https://goreportcard.com/report/github.com/marjamis/kata-go/basicApps/webassembly) |

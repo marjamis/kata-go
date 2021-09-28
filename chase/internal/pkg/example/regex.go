@@ -7,10 +7,13 @@ import (
 
 const str = "data:marjamis@EXAMPLE.COM"
 
-func RegexpRun() {
+func regexpRun() {
 	fmt.Println(regexp.MustCompile(`^data:(.*)@.*$`).FindStringSubmatch(str)[1])
 }
 
 func init() {
-	GetMyExamples().Add("regex", RegexpRun)
+	examples := ExampleRuns{
+		{"FindStringSubmatch", regexpRun},
+	}
+	GetMyExamples().Add("regex", examples.runExamples)
 }

@@ -1,10 +1,11 @@
 package example
 
+// Adapted from: Go in 24 Hours, Sams Teach Yourself: Next Generation Systems Programming with Golang, First Edition
+
 import (
 	"fmt"
 
 	"github.com/marjamis/kata-go/chase/internal/pkg/example/exampleSubPackage"
-	"github.com/marjamis/kata-go/pkg/formatting"
 )
 
 func structValues() {
@@ -42,12 +43,10 @@ func copyReference() {
 	fmt.Printf("c - %#v - %p\n", *c, c)
 }
 
-func StructsRun() {
-	// Adapted from: Go in 24 Hours, Sams Teach Yourself: Next Generation Systems Programming with Golang, First Edition
-	formatting.ExampleWrapper("Accessing values of a struct", structValues)
-	formatting.ExampleWrapper("To make a copy or point to the same data", copyReference)
-}
-
 func init() {
-	GetMyExamples().Add("structs", StructsRun)
+	examples := ExampleRuns{
+		{"Accessing values of a struct", structValues},
+		{"To make a copy or point to the same data", copyReference},
+	}
+	GetMyExamples().Add("structs", examples.runExamples)
 }

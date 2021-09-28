@@ -33,6 +33,52 @@ func responseTime(c chan<- urlInfo, stop chan<- bool, url string) {
 	}
 }
 
+func BufferedRun() {
+	messages := make(chan string, 2)
+
+	messages <- "data"
+	messages <- "again"
+	// messages <- "wont work as above the buffer size"
+
+	// TODO make this a loop
+	fmt.Println(<-messages)
+	fmt.Println(<-messages)
+	// fmt.Println(<-messages)
+}
+
+func worker(done chan bool) {
+	fmt.Print("working...")
+	time.Sleep(time.Second)
+	fmt.Println("done")
+
+	done <- true
+}
+
+// TODO fix with the main function as I think this is largely done
+func ChannelSynchronising() {
+	done := make(chan bool, 1)
+	go worker(done)
+
+	<-done
+}
+
+func ping(pings chan<- string, msg string) {
+	pings <- msg
+}
+
+func pong(pings <-chan string, pongs chan<- string) {
+	msg := <-pings
+	pongs <- msg
+}
+
+func Sending() {
+	pings := make(chan string, 1)
+	pongs := make(chan string, 1)
+	ping(pings, "passed message")
+	pong(pings, pongs)
+	fmt.Println(<-pongs)
+}
+
 func ChannelsRun() {
 	// urls := make([]string, 3)
 	urls := []string{
@@ -47,6 +93,7 @@ func ChannelsRun() {
 	// Unbuffered channel
 	stop := make(chan bool)
 
+	// TODO document more about the ticker and how to use it
 	t := time.NewTicker(50 * time.Millisecond)
 	defer t.Stop()
 
@@ -57,14 +104,17 @@ func ChannelsRun() {
 	// Sets up the blocking for channel processes
 	count := 0
 	for {
+		// TODO document about the select operation
 		select {
 		//TODO fix this to exit so it works consistenly rather than being overridden by the ticker` if they come in at the same time how to order
 		// Timeout on the blocking code. I.e. if this section isn't complete after the set time the timeout will be enacted and break the loop.
-		case <-time.After(50 * time.Millisecond):
+		case <-time.After(500 * time.Millisecond):
 			fmt.Println("Timeout of 50ms has been reached.")
 			return
 		case t := <-t.C:
 			fmt.Printf("Ticker time is %d.\n", t)
+
+		// TODO code this up a bit better so it waits for all work and exits naturally rather than all of these returns
 		case <-stop:
 			fmt.Printf("Stop received.")
 			return
@@ -76,10 +126,21 @@ func ChannelsRun() {
 			if count >= len(urls) {
 				return
 			}
+			// default:
+			// 	// This attempts a non-blocking message channel
+			// 	// TODO more to configure this all up nicely
+			// 	fmt.Printf(".")
 		}
 	}
+
+	// TODO add a range over channels
+
 }
 
 func init() {
-	GetMyExamples().Add("channels", ChannelsRun)
+	examples := ExampleRuns{
+		{"Buffered Run", BufferedRun},
+		{"Channels Run", ChannelsRun},
+	}
+	GetMyExamples().Add("channels", examples.runExamples)
 }

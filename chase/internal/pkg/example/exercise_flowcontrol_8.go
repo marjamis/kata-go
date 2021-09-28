@@ -20,11 +20,14 @@ func sqrt(x float64) float64 {
 	return z
 }
 
-func FlowControlRun() {
+func sqrtRun() {
 	// Exercise details can be found at https://tour.golang.org/flowcontrol/8
 	fmt.Println(sqrt(2))
 }
 
 func init() {
-	GetMyExamples().Add("flow_control", FlowControlRun)
+	examples := ExampleRuns{
+		{"Finding a square root?", sqrtRun},
+	}
+	GetMyExamples().Add("flow_control", examples.runExamples)
 }

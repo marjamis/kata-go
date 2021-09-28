@@ -5,8 +5,6 @@ import (
 	"sort"
 	"strconv"
 	"time"
-
-	"github.com/marjamis/kata-go/pkg/formatting"
 )
 
 type test struct {
@@ -84,13 +82,12 @@ func mapLoop() {
 	}
 }
 
-func LoopsRun() {
-	formatting.ExampleWrapper("Normal count loop", countLoop)
-	formatting.ExampleWrapper("Infinite Loop", infiniteLoop)
-	formatting.ExampleWrapper("Arrays", arrayLoop)
-	formatting.ExampleWrapper("Map i.e. Hash Table", mapLoop)
-}
-
 func init() {
-	GetMyExamples().Add("loops", LoopsRun)
+	examples := ExampleRuns{
+		{"Normal count loop", countLoop},
+		{"Infinite Loop", infiniteLoop},
+		{"Arrays", arrayLoop},
+		{"Map i.e. Hash Table", mapLoop},
+	}
+	GetMyExamples().Add("loops", examples.runExamples)
 }

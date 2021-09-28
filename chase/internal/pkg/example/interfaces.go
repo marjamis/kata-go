@@ -44,7 +44,7 @@ func getDetails(r Robot) string {
 	return r.getDetails()
 }
 
-func InterfaceRun() {
+func interfaceRun() {
 	robots := []Robot{
 		&T1000{
 			Position: "Earth",
@@ -74,5 +74,8 @@ func InterfaceRun() {
 }
 
 func init() {
-	GetMyExamples().Add("interfaces", InterfaceRun)
+	examples := ExampleRuns{
+		{"Example Interfaces", interfaceRun},
+	}
+	GetMyExamples().Add("interfaces", examples.runExamples)
 }

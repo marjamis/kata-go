@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func StringsRun() {
+func stringsRun() {
 	var buf bytes.Buffer
 	for i := 0; i < 500; i++ {
 		buf.WriteString("z")
@@ -29,5 +29,8 @@ func StringsRun() {
 }
 
 func init() {
-	GetMyExamples().Add("strings", StringsRun)
+	examples := ExampleRuns{
+		{"Showing off some basic string manipulation", stringsRun},
+	}
+	GetMyExamples().Add("strings", examples.runExamples)
 }

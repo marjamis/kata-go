@@ -2,8 +2,6 @@ package example
 
 import (
 	"fmt"
-
-	"github.com/marjamis/kata-go/pkg/formatting"
 )
 
 func anonymous() {
@@ -78,13 +76,12 @@ func recursiveFunction() {
 	recurse(count)
 }
 
-func ClosuresRun() {
-	formatting.ExampleWrapper("Anonymous Function", anonymous)
-	formatting.ExampleWrapper("Clousure", closures)
-	formatting.ExampleWrapper("Nested Function", nestedFunction)
-	formatting.ExampleWrapper("Recursive Function", recursiveFunction)
-}
-
 func init() {
-	GetMyExamples().Add("closures", ClosuresRun)
+	examples := ExampleRuns{
+		{"Anonymous Function", anonymous},
+		{"Clousure", closures},
+		{"Nested Function", nestedFunction},
+		{"Recursive Function", recursiveFunction},
+	}
+	GetMyExamples().Add("closures", examples.runExamples)
 }

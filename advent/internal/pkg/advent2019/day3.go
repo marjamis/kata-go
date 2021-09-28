@@ -48,46 +48,26 @@ func day3Direction(flag int, instruction string, grid *[25000][25000]int, x int,
 			//TODO dedup this as it's essentially the same just with different x or y calculations
 			//Note: This is -1 as it's go up the array which is minusing of rows
 			y = y - 1
-			if grid[x][y] == 1 && flag == 2 {
-				grid[x][y] = 3
-				clashes = append(clashes, &coordinates{x, y})
-			} else {
-				grid[x][y] = flag
-			}
+			day3AddWirePoint(flag, grid, x, y)
 		}
 	case "D":
 		// fmt.Println("Down")
 		for i := 0; i < steps; i++ {
 			//Note: This is +1 as it's go down the array which is plussing of rows
 			y = y + 1
-			if grid[x][y] == 1 && flag == 2 {
-				grid[x][y] = 3
-				clashes = append(clashes, &coordinates{x, y})
-			} else {
-				grid[x][y] = flag
-			}
+			day3AddWirePoint(flag, grid, x, y)
 		}
 	case "L":
 		// fmt.Println("Left")
 		for i := 0; i < steps; i++ {
 			x = x - 1
-			if grid[x][y] == 1 && flag == 2 {
-				grid[x][y] = 3
-				clashes = append(clashes, &coordinates{x, y})
-			} else {
-				grid[x][y] = flag
-			}
+			day3AddWirePoint(flag, grid, x, y)
 		}
 	case "R":
 		// fmt.Println("Right")
 		for i := 0; i < steps; i++ {
 			x = x + 1
-			if grid[x][y] == 1 && flag == 2 {
-				grid[x][y] = 3
-				clashes = append(clashes, &coordinates{x, y})
-			} else {
-				grid[x][y] = flag
-			}
+			day3AddWirePoint(flag, grid, x, y)
 		}
 	}
 
@@ -105,6 +85,15 @@ func day3Manhattan() int {
 }
 
 func day3Steps() int {
+	getSteps := func(clash coordinates) int {
+		fmt.Printf("X: %d Y: %d\n", clash.X, clash.Y)
+		return 1
+	}
+
+	for _, clash := range clashes {
+		steps := getSteps(*clash)
+		fmt.Println(steps)
+	}
 	return 1
 }
 

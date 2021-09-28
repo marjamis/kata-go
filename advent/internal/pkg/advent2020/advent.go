@@ -143,7 +143,7 @@ func day3Counter(tobMap [][]string, tobMovement ToboganMovement) (count int) {
 	var x int64
 	var y int64
 	for y < (int64(len(tobMap)) - 1) {
-		log.Debug("x: %d - tobMove.X: %d - len(tobMap): %d\n", x, tobMovement.X, int64(len(tobMap)))
+		log.Debugf("x: %d - tobMove.X: %d - len(tobMap): %d\n", x, tobMovement.X, int64(len(tobMap)))
 		if x+tobMovement.X >= int64(len(tobMap[0])) {
 			x = (x + tobMovement.X) - int64(len(tobMap[0]))
 		} else {
@@ -301,7 +301,6 @@ func day5Parser(lower int, upper int, direction rune) (int, int) {
 
 func day5Wrapper(lower int, upper int, data string) int {
 	for _, d := range data {
-		log.Debug("Index: %d, Lower: %d, Upper: %d\n", i+1, l, u)
 		lower, upper = day5Parser(lower, upper, d)
 	}
 
@@ -335,7 +334,7 @@ func Day5Part2(seatLocations []string) (id int) {
 
 	seat := seatIDs[0] - 1
 	for _, seatID := range seatIDs {
-		log.Debug("Index: %d, SeatID: %d\n", index, seatID)
+		// log.Debug("Index: %d, SeatID: %d\n", index, seatID)
 		if (seatID - seat) > 1 {
 			id = seatID - 1
 			break
@@ -503,7 +502,7 @@ const (
 func day8ExecuteProgram(operations []day8OpData) (acc int, ok bool) {
 	pos := 0
 	for pos != len(operations) {
-		log.Debug("Opcode: %s - Direction: %d\n", changedOperations[pos].opcode, changedOperations[pos].direction)
+		// log.Debug("Opcode: %s - Direction: %d\n", changedOperations[pos].opcode, changedOperations[pos].direction)
 		if operations[pos].visited {
 			break
 		}
@@ -1060,7 +1059,7 @@ func Day13(data []string) (n int) {
 }
 
 // Day13Part2 entry function
-func Day13Part2(data []string, startPosition int) (earliestTimestamp int) {
+func Day13Part2(data []string, startPosition int64) (earliestTimestamp int) {
 	timingData := map[int64]int{}
 	buses := strings.Split(data[1], ",")
 	for i, bus := range buses {
@@ -1072,15 +1071,13 @@ func Day13Part2(data []string, startPosition int) (earliestTimestamp int) {
 		timingData[busID] = i
 	}
 
-	log.Infof("Length: %d, Values: %+v", len(timingData), timingData)
-
 	var largest int64
 	for k := range timingData {
 		if int64(k) > largest {
 			largest = k
 		}
 	}
-	log.Infof("Largest: %d", largest)
+	log.Infof("Length: %d, Values: %+v, Largest: %d", len(timingData), timingData, largest)
 
 	//rearrange tPlys as per the largest
 	for k, v := range timingData {
@@ -1089,37 +1086,44 @@ func Day13Part2(data []string, startPosition int) (earliestTimestamp int) {
 		}
 		log.Infof("Bus '%d' needs to depart 't+%d'", k, timingData[k])
 	}
+	timingData[largest] = 0
+	log.Infof("Length: %d, Values: %+v, Largest: %d", len(timingData), timingData, largest)
 
 	// Starting iteration - normally 0 but allows for easy skipping.
-	batchSize := 1000000
-	i := startPosition
+	batchSize := int64(1000000000)
+	timestampToStartBatchAt := startPosition
 	for true {
-		log.Infof("Timestamp: %d - Iteration: %d", int64(i)*largest, i)
-		for j := i; j < i+batchSize; j++ {
-			count := 1 // 1 is for the largest bus
-			val := float64(int64(j) * largest)
-			initialTimestamp := val
-			for k, busT := range timingData {
-				if int64(k) == largest {
+
+		initialValidNumber := int64((float64(largest) - math.Mod(float64(timestampToStartBatchAt), float64(largest))) + float64(timestampToStartBatchAt))
+		log.Infof("Timestamp: %d", timestampToStartBatchAt)
+		// TODO fix for a small batch size that this would still work, for example a batch size of 1 which currently wouldn't work I think or would it just be not optimised? need to test
+		for timestampOfLargestNumber := initialValidNumber; timestampOfLargestNumber < timestampToStartBatchAt+batchSize; timestampOfLargestNumber += largest {
+			countOfAligningTimes := 1
+			earliestTimestamp := timestampOfLargestNumber
+
+			for busID, busTime := range timingData {
+				// fmt.Printf("BusID: %d, BusTime: %d, BusTimestamp: %d, ModINput: %f", busID, busTime, timestampMinusCurrentBusTimePosition, float64(timestampMinusCurrentBusTimePosition)/float64(busID))
+				if int64(busID) == largest {
 					// log.Debugf("Skipping largest bus...")
 					continue
 				}
-				ntimestamp := val + float64(busT)
-				// log.Debugf("Initial timestamp: %f - difference: %d for bus: '%d' - New timestamp is: %f", val, busT, k, ntimestamp)
-				if math.Mod(float64(ntimestamp/float64(k)), float64(1)) == 0 {
-					log.Debug("Time Match...")
-					count++
-					if ntimestamp < initialTimestamp {
-						initialTimestamp = ntimestamp
+				timestampMinusCurrentBusTimePosition := timestampOfLargestNumber + int64(busTime)
+				modValue := math.Mod(float64(timestampMinusCurrentBusTimePosition)/float64(busID), float64(1))
+				if modValue == 0 {
+					// log.Info("Time Match...")
+					countOfAligningTimes++
+					if timestampMinusCurrentBusTimePosition < earliestTimestamp {
+						earliestTimestamp = timestampMinusCurrentBusTimePosition
 					}
 				}
 			}
-			if count == len(timingData) {
-				log.Debugf("Match found starting timestamp is: %f", initialTimestamp)
-				return int(initialTimestamp)
+
+			if countOfAligningTimes == len(timingData) {
+				log.Infof("Match found starting timestamp is: %d", earliestTimestamp)
+				return int(earliestTimestamp)
 			}
 		}
-		i += batchSize
+		timestampToStartBatchAt += batchSize
 	}
 
 	return
@@ -1588,239 +1592,239 @@ func Day16Part2(ticketData string) (errorRate int64) {
 	return multi
 }
 
-type energySource [][][]bool
+// type energySource [][][]bool
 
-func (array energySource) day17Print() {
-	zs := (len(array) / 2) * -1
-	for _, z := range array {
-		log.Debugf("Z: %d", zs)
-		zs++
-		for _, y := range z {
-			for _, x := range y {
-				var v rune
-				if x {
-					v = '#'
-				} else {
-					v = '.'
-				}
-			}
-		}
-	}
-}
+// func (array energySource) day17Print() {
+// 	zs := (len(array) / 2) * -1
+// 	for _, z := range array {
+// 		log.Debugf("Z: %d", zs)
+// 		zs++
+// 		for _, y := range z {
+// 			for _, x := range y {
+// 				var v rune
+// 				if x {
+// 					v = '#'
+// 				} else {
+// 					v = '.'
+// 				}
+// 			}
+// 		}
+// 	}
+// }
 
-func (array energySource) day17CountActive() (activeCount int) {
-	for _, z := range array {
-		for _, y := range z {
-			for _, x := range y {
-				if x {
-					activeCount++
-				}
-			}
-		}
-	}
+// func (array energySource) day17CountActive() (activeCount int) {
+// 	for _, z := range array {
+// 		for _, y := range z {
+// 			for _, x := range y {
+// 				if x {
+// 					activeCount++
+// 				}
+// 			}
+// 		}
+// 	}
 
-	return
-}
+// 	return
+// }
 
-func day17CreateBlank2D(z, y, x int) [][]bool {
-	arr := [][]bool{}
-	for i := 0; i < y; i++ {
-		temp := make([]bool, x)
-		arr = append(arr, temp)
-	}
+// func day17CreateBlank2D(z, y, x int) [][]bool {
+// 	arr := [][]bool{}
+// 	for i := 0; i < y; i++ {
+// 		temp := make([]bool, x)
+// 		arr = append(arr, temp)
+// 	}
 
-	return arr
-}
+// 	return arr
+// }
 
-// This will expand the energySource in every direction (x, y and z) by 1.
-func (array energySource) day17Expand() energySource {
-	zLen := len(array)
-	yLen := len(array[0])
-	xLen := len(array[0][0])
-	log.Printf("Z: %d, Y: %d, X: %d", zLen, yLen, xLen)
-	plus := 0
-	if zLen != 1 {
-		plus = 2
-	}
+// // This will expand the energySource in every direction (x, y and z) by 1.
+// func (array energySource) day17Expand() energySource {
+// 	zLen := len(array)
+// 	yLen := len(array[0])
+// 	xLen := len(array[0][0])
+// 	log.Printf("Z: %d, Y: %d, X: %d", zLen, yLen, xLen)
+// 	plus := 0
+// 	if zLen != 1 {
+// 		plus = 2
+// 	}
 
-	newZ := energySource{}
-	newZ = append(newZ, day17CreateBlank2D(zLen, yLen+plus, xLen+plus))
-	for z := 0; z < zLen; z++ {
-		newY := [][]bool{}
-		if plus != 0 {
-			newY = append(newY, make([]bool, yLen+plus))
-		}
-		for y := 0; y < yLen; y++ {
-			// Takes initial row data and adds a false on either side for new inactive states
-			if zLen != 1 {
-				// Append false to the end of the pulled array data
-				fromData := append(array[z][y], false)
-				// Prepend false
-				fromData = append([]bool{false}[0:], fromData...)
-				newY = append(newY, fromData)
-			} else {
-				newY = append(newY, array[z][y])
-			}
-		}
-		if plus != 0 {
-			newY = append(newY, make([]bool, yLen+plus))
-		}
-		newZ = append(newZ, newY)
-	}
-	newZ = append(newZ, day17CreateBlank2D(zLen, yLen+plus, xLen+plus))
+// 	newZ := energySource{}
+// 	newZ = append(newZ, day17CreateBlank2D(zLen, yLen+plus, xLen+plus))
+// 	for z := 0; z < zLen; z++ {
+// 		newY := [][]bool{}
+// 		if plus != 0 {
+// 			newY = append(newY, make([]bool, yLen+plus))
+// 		}
+// 		for y := 0; y < yLen; y++ {
+// 			// Takes initial row data and adds a false on either side for new inactive states
+// 			if zLen != 1 {
+// 				// Append false to the end of the pulled array data
+// 				fromData := append(array[z][y], false)
+// 				// Prepend false
+// 				fromData = append([]bool{false}[0:], fromData...)
+// 				newY = append(newY, fromData)
+// 			} else {
+// 				newY = append(newY, array[z][y])
+// 			}
+// 		}
+// 		if plus != 0 {
+// 			newY = append(newY, make([]bool, yLen+plus))
+// 		}
+// 		newZ = append(newZ, newY)
+// 	}
+// 	newZ = append(newZ, day17CreateBlank2D(zLen, yLen+plus, xLen+plus))
 
-	return newZ
-}
+// 	return newZ
+// }
 
-type day17Coordinates struct {
-	X int
-	Y int
-	Z int
-}
+// type day17Coordinates struct {
+// 	X int
+// 	Y int
+// 	Z int
+// }
 
-func (array energySource) day17FindValidPositions(z, y, x int) []day17Coordinates {
-	log.Debugf("Position at: z:%d y:%d x:%d", z, y, x)
-	zLen := len(array)
-	yLen := len(array[0])
-	xLen := len(array[0][0])
+// func (array energySource) day17FindValidPositions(z, y, x int) []day17Coordinates {
+// 	log.Debugf("Position at: z:%d y:%d x:%d", z, y, x)
+// 	zLen := len(array)
+// 	yLen := len(array[0])
+// 	xLen := len(array[0][0])
 
-	positions := []day17Coordinates{
-		// Same plane
-		{x - 1, y - 1, z},
-		{x, y - 1, z},
-		{x + 1, y - 1, z},
-		{x - 1, y, z},
-		{x + 1, y, z},
-		{x - 1, y + 1, z},
-		{x, y + 1, z},
-		{x + 1, y + 1, z},
+// 	positions := []day17Coordinates{
+// 		// Same plane
+// 		{x - 1, y - 1, z},
+// 		{x, y - 1, z},
+// 		{x + 1, y - 1, z},
+// 		{x - 1, y, z},
+// 		{x + 1, y, z},
+// 		{x - 1, y + 1, z},
+// 		{x, y + 1, z},
+// 		{x + 1, y + 1, z},
 
-		// "Left" plane
-		{x - 1, y - 1, z - 1},
-		{x, y - 1, z - 1},
-		{x + 1, y - 1, z - 1},
-		{x - 1, y, z - 1},
-		{x + 1, y, z - 1},
-		{x - 1, y + 1, z - 1},
-		{x, y + 1, z - 1},
-		{x + 1, y + 1, z - 1},
-		{x, y, z - 1},
+// 		// "Left" plane
+// 		{x - 1, y - 1, z - 1},
+// 		{x, y - 1, z - 1},
+// 		{x + 1, y - 1, z - 1},
+// 		{x - 1, y, z - 1},
+// 		{x + 1, y, z - 1},
+// 		{x - 1, y + 1, z - 1},
+// 		{x, y + 1, z - 1},
+// 		{x + 1, y + 1, z - 1},
+// 		{x, y, z - 1},
 
-		// "Right" plane
-		{x - 1, y - 1, z + 1},
-		{x, y - 1, z + 1},
-		{x + 1, y - 1, z + 1},
-		{x - 1, y, z + 1},
-		{x + 1, y, z + 1},
-		{x - 1, y + 1, z + 1},
-		{x, y + 1, z + 1},
-		{x + 1, y + 1, z + 1},
-		{x, y, z + 1},
-	}
+// 		// "Right" plane
+// 		{x - 1, y - 1, z + 1},
+// 		{x, y - 1, z + 1},
+// 		{x + 1, y - 1, z + 1},
+// 		{x - 1, y, z + 1},
+// 		{x + 1, y, z + 1},
+// 		{x - 1, y + 1, z + 1},
+// 		{x, y + 1, z + 1},
+// 		{x + 1, y + 1, z + 1},
+// 		{x, y, z + 1},
+// 	}
 
-	validPositions := []day17Coordinates{}
-	for i, position := range positions {
-		// log.Debugf("Position check: X: %d Y: %d Z: %d", position.X, position.Y, position.Z)
-		if (position.X >= 0 && position.X < xLen) && (position.Y >= 0 && position.Y < yLen) && (position.Z >= 0 && position.Z < zLen) {
-			validPositions = append(validPositions, position)
-			log.Debugf("%d - %+v", i, position)
-		}
-	}
+// 	validPositions := []day17Coordinates{}
+// 	for i, position := range positions {
+// 		// log.Debugf("Position check: X: %d Y: %d Z: %d", position.X, position.Y, position.Z)
+// 		if (position.X >= 0 && position.X < xLen) && (position.Y >= 0 && position.Y < yLen) && (position.Z >= 0 && position.Z < zLen) {
+// 			validPositions = append(validPositions, position)
+// 			log.Debugf("%d - %+v", i, position)
+// 		}
+// 	}
 
-	return validPositions
-}
+// 	return validPositions
+// }
 
-func (array energySource) day17Count(positions []day17Coordinates) (count int) {
-	for _, pos := range positions {
-		if array[pos.Z][pos.Y][pos.X] {
-			count++
-		}
-	}
-	log.Debugf("Count is: %d", count)
-	return
-}
+// func (array energySource) day17Count(positions []day17Coordinates) (count int) {
+// 	for _, pos := range positions {
+// 		if array[pos.Z][pos.Y][pos.X] {
+// 			count++
+// 		}
+// 	}
+// 	log.Debugf("Count is: %d", count)
+// 	return
+// }
 
-func (array energySource) day17Copy() (replacement energySource) {
-	for _, z := range array {
-		newZ := [][]bool{}
-		for _, y := range z {
-			newY := []bool{}
-			for _, x := range y {
-				newY = append(newY, x)
-			}
-			newZ = append(newZ, newY)
-		}
-		replacement = append(replacement, newZ)
-	}
+// func (array energySource) day17Copy() (replacement energySource) {
+// 	for _, z := range array {
+// 		newZ := [][]bool{}
+// 		for _, y := range z {
+// 			newY := []bool{}
+// 			for _, x := range y {
+// 				newY = append(newY, x)
+// 			}
+// 			newZ = append(newZ, newY)
+// 		}
+// 		replacement = append(replacement, newZ)
+// 	}
 
-	return
-}
+// 	return
+// }
 
-func (array energySource) day17Flip() energySource {
-	replacement := array.day17Copy()
+// func (array energySource) day17Flip() energySource {
+// 	replacement := array.day17Copy()
 
-	log.Debugf("Replacement length: %d - Array length: %d", len(replacement), len(array))
-	for zi, z := range array {
-		for yi, y := range z {
-			for xi, x := range y {
-				vp := array.day17FindValidPositions(zi, yi, xi)
-				count := array.day17Count(vp)
-				if x && !(count == 2 || count == 3) {
-					replacement[zi][yi][xi] = false
-				} else if !x && (count == 3) {
-					replacement[zi][yi][xi] = true
-				}
-			}
-		}
-	}
+// 	log.Debugf("Replacement length: %d - Array length: %d", len(replacement), len(array))
+// 	for zi, z := range array {
+// 		for yi, y := range z {
+// 			for xi, x := range y {
+// 				vp := array.day17FindValidPositions(zi, yi, xi)
+// 				count := array.day17Count(vp)
+// 				if x && !(count == 2 || count == 3) {
+// 					replacement[zi][yi][xi] = false
+// 				} else if !x && (count == 3) {
+// 					replacement[zi][yi][xi] = true
+// 				}
+// 			}
+// 		}
+// 	}
 
-	return replacement
-}
+// 	return replacement
+// }
 
-// Day17 entry function
-func Day17(data string) (activeCube int) {
-	array := energySource{}
+// // Day17 entry function
+// func Day17(data string) (activeCube int) {
+// 	array := energySource{}
 
-	re := regexp.MustCompile(`(.)+`)
-	rows := re.FindAllString(data, -1)
+// 	re := regexp.MustCompile(`(.)+`)
+// 	rows := re.FindAllString(data, -1)
 
-	// Takes the initial state and replicates it over the 3x3x3, instead of the 3x3x1
-	for i := 0; i < 3; i++ {
-		zAxis := [][]bool{}
-		for _, row := range rows {
-			// Try a make here for the initial size while not making it a type?
-			newRow := []bool{}
-			for _, col := range row {
-				if col == '#' {
-					newRow = append(newRow, true)
-				} else {
-					newRow = append(newRow, false)
-				}
-			}
-			zAxis = append(zAxis, newRow)
-		}
-		array = append(array, zAxis)
-	}
+// 	// Takes the initial state and replicates it over the 3x3x3, instead of the 3x3x1
+// 	for i := 0; i < 3; i++ {
+// 		zAxis := [][]bool{}
+// 		for _, row := range rows {
+// 			// Try a make here for the initial size while not making it a type?
+// 			newRow := []bool{}
+// 			for _, col := range row {
+// 				if col == '#' {
+// 					newRow = append(newRow, true)
+// 				} else {
+// 					newRow = append(newRow, false)
+// 				}
+// 			}
+// 			zAxis = append(zAxis, newRow)
+// 		}
+// 		array = append(array, zAxis)
+// 	}
 
-	// Testing
-	// array = array.day17Expand()
-	// replacement := array.day17Flip()
-	log.Debug("Original")
-	array.day17Print()
-	array = array.day17Flip()
-	log.Debug("Updated")
-	array.day17Print()
-	// replacement.day17Print()
+// 	// Testing
+// 	// array = array.day17Expand()
+// 	// replacement := array.day17Flip()
+// 	log.Debug("Original")
+// 	array.day17Print()
+// 	array = array.day17Flip()
+// 	log.Debug("Updated")
+// 	array.day17Print()
+// 	// replacement.day17Print()
 
-	// TOOD works, I think, uncomment
-	// for i := 1; i <= 1; i++ {
-	// 	array = array.day17Expand()
-	// 	array = array.day17Flip()
-	// 	log.Debugf("Step: %d", i)
-	// }
+// 	// TOOD works, I think, uncomment
+// 	// for i := 1; i <= 1; i++ {
+// 	// 	array = array.day17Expand()
+// 	// 	array = array.day17Flip()
+// 	// 	log.Debugf("Step: %d", i)
+// 	// }
 
-	return array.day17CountActive()
-}
+// 	return array.day17CountActive()
+// }
 
 func calculateGroup(expression string) (result int) {
 	operations := strings.Split(expression, " ")

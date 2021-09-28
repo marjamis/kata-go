@@ -12,33 +12,26 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "chase",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
+	Short: "chase is a quick CLI to run some basic golang tests via a single CLI command",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Check the help page to see what examples are available. Exiting...")
+		cmd.Help()
 	},
 }
 
 func subCommands() {
-	for k, v := range example.GetMyExamples() {
-		// Required to ensure the function isn't overridden in later internal processes and is it's own variable
-		funct := v
+	for subCommandName, subCommandFunction := range example.GetMyExamples() {
+		// Required to ensure the function for each subcommand isn't overridden and always points to it's own function specifically
+		subcommandFunction := subCommandFunction
 		rootCmd.AddCommand(&cobra.Command{
-			Use: k,
+			Use: subCommandName,
 			Run: func(cmd *cobra.Command, args []string) {
-				funct()
+				subcommandFunction()
 			},
 		})
 	}
 }
 
+// Execute runs the command, as per cobra
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

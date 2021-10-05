@@ -26,7 +26,7 @@ func sqrtRun() {
 }
 
 func init() {
-	examples := ExampleRuns{
+	examples := runs{
 		{"Finding a square root?", sqrtRun},
 	}
 	GetMyExamples().Add("flow_control", examples.runExamples)

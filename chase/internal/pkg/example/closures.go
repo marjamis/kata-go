@@ -77,7 +77,7 @@ func recursiveFunction() {
 }
 
 func init() {
-	examples := ExampleRuns{
+	examples := runs{
 		{"Anonymous Function", anonymous},
 		{"Clousure", closures},
 		{"Nested Function", nestedFunction},

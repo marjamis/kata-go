@@ -8,7 +8,7 @@ import (
 )
 
 type test struct {
-	Id          string
+	ID          string
 	Description string
 }
 
@@ -39,7 +39,7 @@ func arrayLoop() {
 	for i := 0; i < 10; i++ {
 		// Note: Append is a variadic function
 		testData = append(testData, &test{
-			Id:          strconv.Itoa(i),
+			ID:          strconv.Itoa(i),
 			Description: "Test data for id " + strconv.Itoa(i),
 		})
 	}
@@ -57,7 +57,7 @@ func mapLoop() {
 	testData := make(map[string]*test)
 	for i := 0; i < 10; i++ {
 		testData["keys"+strconv.Itoa(i)] = &test{
-			Id:          strconv.Itoa(i),
+			ID:          strconv.Itoa(i),
 			Description: "Test data for id " + strconv.Itoa(i),
 		}
 	}
@@ -83,7 +83,7 @@ func mapLoop() {
 }
 
 func init() {
-	examples := ExampleRuns{
+	examples := runs{
 		{"Normal count loop", countLoop},
 		{"Infinite Loop", infiniteLoop},
 		{"Arrays", arrayLoop},

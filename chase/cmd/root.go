@@ -29,6 +29,17 @@ func subCommands() {
 			},
 		})
 	}
+
+	// Add a special subCommand "all" which will run through all the examples at the one time
+	rootCmd.AddCommand(&cobra.Command{
+		Use: "all",
+		Run: func(cmd *cobra.Command, args []string) {
+			// Note: order isn't consistent as it loops through a map. For now this is fine but may want to sort the keys first
+			for _, subCommandFunction := range example.GetMyExamples() {
+				subCommandFunction()
+			}
+		},
+	})
 }
 
 // Execute runs the command, as per cobra

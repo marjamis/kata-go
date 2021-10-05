@@ -74,7 +74,7 @@ func interfaceRun() {
 }
 
 func init() {
-	examples := ExampleRuns{
+	examples := runs{
 		{"Example Interfaces", interfaceRun},
 	}
 	GetMyExamples().Add("interfaces", examples.runExamples)

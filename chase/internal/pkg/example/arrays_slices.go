@@ -95,7 +95,7 @@ func structs() {
 }
 
 func init() {
-	examples := ExampleRuns{
+	examples := runs{
 		{"Appending with slices", appending},
 		{"Arrays", arrays},
 		{"Arrays & slices with custom types", structs},

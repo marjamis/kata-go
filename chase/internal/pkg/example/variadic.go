@@ -11,12 +11,15 @@ func sumNumbers(numbers ...int) int {
 	return total
 }
 
-func VariadicRun() {
+func simpleVariadic() {
 	fmt.Println(sumNumbers(1, 2, 3))
 	fmt.Println(sumNumbers(1, 2, 3, 4, 5, 6))
 	fmt.Println(sumNumbers(1, 1, 1, 1, 1, 1, 1, 1, 1, 12, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 34, 4, 4, 4, 4, 9))
 }
 
 func init() {
-	GetMyExamples().Add("variadic", VariadicRun)
+	examples := runs{
+		{"Showcasing a simple variadic of integers to be summed", simpleVariadic},
+	}
+	GetMyExamples().Add("variadic", examples.runExamples)
 }

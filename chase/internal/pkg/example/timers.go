@@ -1,5 +1,7 @@
 package example
 
+// Example from: https://gobyexample.com/timers
+
 import (
 	"fmt"
 	"time"
@@ -25,7 +27,7 @@ func timer() {
 }
 
 func init() {
-	examples := ExampleRuns{
+	examples := runs{
 		{"Basic timer that is set and fires and an additional timer which is stopped", timer},
 	}
 	GetMyExamples().Add("timers", examples.runExamples)

@@ -8,7 +8,7 @@ import (
 )
 
 type urlInfo struct {
-	Url     string
+	URL     string
 	Elapsed float64
 }
 
@@ -28,12 +28,12 @@ func responseTime(c chan<- urlInfo, stop chan<- bool, url string) {
 	defer res.Body.Close()
 
 	c <- urlInfo{
-		Url:     url,
+		URL:     url,
 		Elapsed: time.Since(start).Seconds(),
 	}
 }
 
-func BufferedRun() {
+func buffered() {
 	messages := make(chan string, 2)
 
 	messages <- "data"
@@ -55,7 +55,7 @@ func worker(done chan bool) {
 }
 
 // TODO fix with the main function as I think this is largely done
-func ChannelSynchronising() {
+func channelSynchronising() {
 	done := make(chan bool, 1)
 	go worker(done)
 
@@ -71,7 +71,7 @@ func pong(pings <-chan string, pongs chan<- string) {
 	pongs <- msg
 }
 
-func Sending() {
+func sending() {
 	pings := make(chan string, 1)
 	pongs := make(chan string, 1)
 	ping(pings, "passed message")
@@ -79,7 +79,7 @@ func Sending() {
 	fmt.Println(<-pongs)
 }
 
-func ChannelsRun() {
+func channels() {
 	// urls := make([]string, 3)
 	urls := []string{
 		"https://www.australia.gov.au",
@@ -120,7 +120,7 @@ func ChannelsRun() {
 			return
 
 		case data := <-c:
-			fmt.Printf("%s took %v seconds \n", data.Url, data.Elapsed)
+			fmt.Printf("%s took %v seconds \n", data.URL, data.Elapsed)
 			// General check as I can't use a for loop check overall as I have other case options rather than just the one for the urls.
 			count++
 			if count >= len(urls) {
@@ -138,9 +138,9 @@ func ChannelsRun() {
 }
 
 func init() {
-	examples := ExampleRuns{
-		{"Buffered Run", BufferedRun},
-		{"Channels Run", ChannelsRun},
+	examples := runs{
+		{"Buffered Run", buffered},
+		{"Channels Run", channels},
 	}
 	GetMyExamples().Add("channels", examples.runExamples)
 }

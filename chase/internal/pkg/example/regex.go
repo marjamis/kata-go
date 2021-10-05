@@ -12,7 +12,7 @@ func regexpRun() {
 }
 
 func init() {
-	examples := ExampleRuns{
+	examples := runs{
 		{"FindStringSubmatch", regexpRun},
 	}
 	GetMyExamples().Add("regex", examples.runExamples)

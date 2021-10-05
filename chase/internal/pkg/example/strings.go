@@ -29,7 +29,7 @@ func stringsRun() {
 }
 
 func init() {
-	examples := ExampleRuns{
+	examples := runs{
 		{"Showing off some basic string manipulation", stringsRun},
 	}
 	GetMyExamples().Add("strings", examples.runExamples)

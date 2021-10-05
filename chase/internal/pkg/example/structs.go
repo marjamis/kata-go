@@ -44,7 +44,7 @@ func copyReference() {
 }
 
 func init() {
-	examples := ExampleRuns{
+	examples := runs{
 		{"Accessing values of a struct", structValues},
 		{"To make a copy or point to the same data", copyReference},
 	}

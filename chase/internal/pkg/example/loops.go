@@ -26,7 +26,7 @@ func infiniteLoop() {
 	for {
 		fmt.Printf("The time is: %d\n", time.Now().Second())
 		if time.Now().Second()%5 == 0 {
-			fmt.Println("The second is divisible by 5 exiting loop and function.\n\n")
+			fmt.Println("The second is divisible by 5 exiting loop and function.")
 			return
 		}
 		time.Sleep(1 * time.Second)

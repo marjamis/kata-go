@@ -2,22 +2,26 @@ package example
 
 import "fmt"
 
+// Robot generic interface for a robot
 type Robot interface {
 	getPosition() string
 	getDetails() string
 }
 
+// Details is the information about a robot
 type Details struct {
 	Name        string
 	PhoneNumber string
 }
 
+// T1000 is a type of robot
 type T1000 struct {
 	Position string
 	Strength int
 	Details
 }
 
+// Data is a type of robot
 type Data struct {
 	Position     string
 	Intelligence int

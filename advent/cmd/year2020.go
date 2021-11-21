@@ -32,13 +32,13 @@ var days = map[string]day{
 	"03": {
 		Function: func() {
 			data := helpers.ReadStringArray2d(dataDirectory + "day3.txt")
-			fmt.Println(advent2020.Day3(data, []advent2020.ToboganMovement{advent2020.ToboganMovement{X: 3, Y: 1}}))
+			fmt.Println(advent2020.Day3(data, []advent2020.ToboganMovement{{X: 3, Y: 1}}))
 			fmt.Println(advent2020.Day3(data, []advent2020.ToboganMovement{
-				advent2020.ToboganMovement{X: 1, Y: 1},
-				advent2020.ToboganMovement{X: 3, Y: 1},
-				advent2020.ToboganMovement{X: 5, Y: 1},
-				advent2020.ToboganMovement{X: 7, Y: 1},
-				advent2020.ToboganMovement{X: 1, Y: 2},
+				{X: 1, Y: 1},
+				{X: 3, Y: 1},
+				{X: 5, Y: 1},
+				{X: 7, Y: 1},
+				{X: 1, Y: 2},
 			}))
 		},
 	},

@@ -126,11 +126,11 @@ func TestDay3(t *testing.T) {
 
 	t.Run("Wrapper test", func(t *testing.T) {
 		assert.Equal(t, 336, Day3(tobMap, []ToboganMovement{
-			ToboganMovement{1, 1},
-			ToboganMovement{3, 1},
-			ToboganMovement{5, 1},
-			ToboganMovement{7, 1},
-			ToboganMovement{1, 2},
+			{1, 1},
+			{3, 1},
+			{5, 1},
+			{7, 1},
+			{1, 2},
 		}))
 	})
 }

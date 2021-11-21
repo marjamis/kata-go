@@ -1,6 +1,7 @@
 package advent2019
 
-func day2(v ...int) []int {
+// Day2 function
+func Day2(v ...int) []int {
 	position := 0
 	for true {
 		switch v[position] {

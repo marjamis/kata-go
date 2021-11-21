@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func day4Rules1(num int) bool {
+func Day4Rules1(num int) bool {
 	snum := strconv.Itoa(num)
 
 	hasSameAdjacent := false
@@ -25,7 +25,7 @@ func day4Rules1(num int) bool {
 	return hasSameAdjacent && isAscending
 }
 
-func day4Rules2(num int) bool {
+func Day4Rules2(num int) bool {
 	snum := strconv.Itoa(num)
 
 	hasSameAdjacent := false
@@ -55,7 +55,8 @@ func day4Rules2(num int) bool {
 	return hasSameAdjacent && isAscending
 }
 
-func day4(rng string, f func(int) bool) int {
+// Day4 function
+func Day4(rng string, f func(int) bool) int {
 	r := strings.Split(rng, "-")
 	start, _ := strconv.Atoi(r[0])
 	end, _ := strconv.Atoi(r[1])

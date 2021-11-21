@@ -14,7 +14,8 @@ func day5OpcodeBreak(data int) (int, int, int, int) {
 	return opcode, p1, p2, p3
 }
 
-func day5(systemId string, v ...int) ([]int, int) {
+// Day5 function
+func Day5(systemID string, v ...int) ([]int, int) {
 	position := 0
 	output := 0
 
@@ -51,8 +52,8 @@ func day5(systemId string, v ...int) ([]int, int) {
 			position += 4
 		case 3:
 			//Input for a parameter
-			systemIdI, _ := strconv.Atoi(systemId)
-			v[v[position+1]] = systemIdI
+			systemIDI, _ := strconv.Atoi(systemID)
+			v[v[position+1]] = systemIDI
 			position += 2
 		case 4:
 			//Output value of parameter

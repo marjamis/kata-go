@@ -71,7 +71,8 @@ func getPathFromEndNode(op *orbitPoint) []string {
 	return opa
 }
 
-func day6(mapItems []string) int {
+// Day6 function
+func Day6(mapItems []string) int {
 	//Universal Orbit Map
 	uom := &orbitPoint{
 		"COM",
@@ -88,7 +89,8 @@ func day6(mapItems []string) int {
 	return count
 }
 
-func day6Part2(mapItems []string) int {
+// Day6Part2 function
+func Day6Part2(mapItems []string) int {
 	//Universal Orbit Map
 	uom := &orbitPoint{
 		"COM",

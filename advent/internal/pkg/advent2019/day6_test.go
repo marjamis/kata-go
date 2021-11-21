@@ -37,7 +37,7 @@ func TestDay6(t *testing.T) {
 	}
 
 	for _, test := range day6Part1Tests {
-		assert.Equal(test.countOfOrbits, day6(test.orbits))
+		assert.Equal(test.countOfOrbits, Day6(test.orbits))
 	}
 
 	//Verified Solution
@@ -60,7 +60,7 @@ func TestDay6(t *testing.T) {
 	}
 
 	for _, test := range day6Part2Tests {
-		assert.Equal(test.countOfOrbits, day6Part2(test.orbits))
+		assert.Equal(test.countOfOrbits, Day6Part2(test.orbits))
 	}
 
 	//Verified Solution

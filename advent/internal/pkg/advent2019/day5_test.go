@@ -82,7 +82,7 @@ func TestDay5(t *testing.T) {
 	}
 
 	for _, test := range day5Tests {
-		responseArray, _ := day5(test.code, test.input...)
+		responseArray, _ := Day5(test.code, test.input...)
 		assert.ElementsMatch(test.resultArray, responseArray)
 	}
 
@@ -134,7 +134,7 @@ func TestDay5(t *testing.T) {
 	}
 
 	for _, test := range day5TestsP2 {
-		_, code := day5(test.code, test.input...)
+		_, code := Day5(test.code, test.input...)
 		assert.Equal(test.resultCode, code)
 	}
 

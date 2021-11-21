@@ -1,6 +1,7 @@
 package advent2019
 
-func day1(requireSubFuel bool, modules ...int) (totalFuel int) {
+// Day1 function
+func Day1(requireSubFuel bool, modules ...int) (totalFuel int) {
 	for _, module := range modules {
 		moduleFuel := (module / 3) - 2
 

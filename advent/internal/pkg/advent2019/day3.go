@@ -33,6 +33,15 @@ func abs(x int) int {
 	return x
 }
 
+func day3AddWirePoint(flag int, grid *[25000][25000]int, x int, y int) {
+	if grid[x][y] == 1 && flag == 2 {
+		grid[x][y] = 3
+		clashes = append(clashes, &coordinates{x, y})
+	} else {
+		grid[x][y] = flag
+	}
+}
+
 func day3Direction(flag int, instruction string, grid *[25000][25000]int, x int, y int) (int, int) {
 	direction := string(instruction[0])
 	steps, err := strconv.Atoi(instruction[1:])
@@ -74,7 +83,8 @@ func day3Direction(flag int, instruction string, grid *[25000][25000]int, x int,
 	return x, y
 }
 
-func day3Manhattan() int {
+// Day3Manhattan function
+func Day3Manhattan() int {
 	var num []int
 	for _, clash := range clashes {
 		num = append(num, abs(clash.X-constCentralPoint.X)+abs(clash.Y-constCentralPoint.Y))
@@ -84,7 +94,8 @@ func day3Manhattan() int {
 	return num[0]
 }
 
-func day3Steps() int {
+// Day3Steps function
+func Day3Steps() int {
 	getSteps := func(clash coordinates) int {
 		fmt.Printf("X: %d Y: %d\n", clash.X, clash.Y)
 		return 1
@@ -97,7 +108,8 @@ func day3Steps() int {
 	return 1
 }
 
-func day3(wire1 []string, wire2 []string, f func() int) int {
+// Day3 function
+func Day3(wire1 []string, wire2 []string, f func() int) int {
 	//TODO devise a better strat than the 25000
 	grid := [25000][25000]int{}
 	//Central Point set

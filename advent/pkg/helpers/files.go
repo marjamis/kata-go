@@ -8,8 +8,6 @@ import (
 	"strconv"
 )
 
-//TODO better, i.e. more generic or better named and coding error checking throughout
-
 // ReadIntArray reads from file and returns an []int
 func ReadIntArray(file string) (ints []int) {
 	fdata, _ := os.Open(file)

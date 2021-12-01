@@ -53,9 +53,8 @@ var days2019 = map[string]day{
 // year2019Cmd represents the year2019 command
 var year2019Cmd = &cobra.Command{
 	Use:   "year2019",
-	Short: "A brief description of your command",
+	Short: "Runs through the each advent day for the year",
 	Run: func(cmd *cobra.Command, args []string) {
-		setLogLevel()
 		fmt.Println("2019 called")
 		printAllDaysOutput(cmd, args)
 	},

@@ -62,6 +62,7 @@ func addDaySubCommandToYearCommand(parentCmd *cobra.Command, days map[string]day
 }
 
 func printAllDaysOutput(cmd *cobra.Command, args []string) {
+	setLogLevel()
 	// Loops through the child commands (which cobra sorts) and executes the Run function.
 	for _, c := range cmd.Commands() {
 		c.Run(cmd, args)

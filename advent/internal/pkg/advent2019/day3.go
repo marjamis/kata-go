@@ -54,7 +54,6 @@ func day3Direction(flag int, instruction string, grid *[25000][25000]int, x int,
 	case "U":
 		// fmt.Println("Up")
 		for i := 0; i < steps; i++ {
-			//TODO dedup this as it's essentially the same just with different x or y calculations
 			//Note: This is -1 as it's go up the array which is minusing of rows
 			y = y - 1
 			day3AddWirePoint(flag, grid, x, y)
@@ -110,7 +109,6 @@ func Day3Steps() int {
 
 // Day3 function
 func Day3(wire1 []string, wire2 []string, f func() int) int {
-	//TODO devise a better strat than the 25000
 	grid := [25000][25000]int{}
 	//Central Point set
 	grid[constCentralPoint.X][constCentralPoint.Y] = -1

@@ -2,8 +2,11 @@ package helpers
 
 import (
 	"bufio"
+	"encoding/csv"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 )
@@ -79,6 +82,36 @@ func ReadRuneArray2d(file string) (strings [][]rune) {
 			substrings = append(substrings, c)
 		}
 		strings = append(strings, substrings)
+	}
+
+	return
+}
+
+// ReadIntCSV reads a csv file and return a 2d int array
+func ReadIntCSV(file string) (ints [][]int) {
+	fdata, _ := os.Open(file)
+	defer fdata.Close()
+
+	r := csv.NewReader(fdata)
+
+	var recordCount int
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var newLine []int
+		for _, value := range record {
+			d, _ := strconv.Atoi(value)
+			newLine = append(newLine, d)
+		}
+		ints = append(ints, newLine)
+
+		recordCount++
 	}
 
 	return

@@ -20,10 +20,10 @@ var days2019 = map[string]day{
 		}},
 	"02": {
 		Function: func() {
-			// TODO this needs redoing to ensure correct result and testing
-			data := helpers.ReadIntArray(dataDirectory2019 + "day2.csv")
-			fmt.Println(advent2019.Day2(data...))
-			fmt.Println(advent2019.Day2(data...))
+			// Only obtains the first line of ints as this is all the data that's required
+			data := helpers.ReadIntCSV(dataDirectory2019 + "day2.csv")[0]
+			fmt.Println(advent2019.Day2Part1(data...))
+			fmt.Println(advent2019.Day2Part2(data...))
 		}},
 	"03": {
 		Function: func() {

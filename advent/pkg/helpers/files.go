@@ -26,7 +26,7 @@ func ReadIntArray(file string) (ints []int) {
 	return
 }
 
-// ReadStringArray  reads from file and returns a []string
+// ReadStringArray reads from file and returns a []string
 func ReadStringArray(file string) (strings []string) {
 	fdata, _ := os.Open(file)
 	defer fdata.Close()
@@ -110,6 +110,35 @@ func ReadIntCSV(file string) (ints [][]int) {
 			newLine = append(newLine, d)
 		}
 		ints = append(ints, newLine)
+
+		recordCount++
+	}
+
+	return
+}
+
+// ReadStringCSV reads a csv file and return a 2d int array
+func ReadStringCSV(file string) (strings [][]string) {
+	fdata, _ := os.Open(file)
+	defer fdata.Close()
+
+	r := csv.NewReader(fdata)
+
+	var recordCount int
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var newLine []string
+		for _, value := range record {
+			newLine = append(newLine, value)
+		}
+		strings = append(strings, newLine)
 
 		recordCount++
 	}

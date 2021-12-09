@@ -1,30 +1,17 @@
 package advent2019
 
 import (
-	"bufio"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDay6(t *testing.T) {
-	assert := assert.New(t)
-
-	fdata, _ := os.Open("../../../test/advent2019/day6Data.txt")
-	defer fdata.Close()
-	scanner := bufio.NewScanner(fdata)
-	scanner.Split(bufio.ScanLines)
-	var strings []string
-	for scanner.Scan() {
-		strings = append(strings, scanner.Text())
-	}
-
+func TestDay6Part1(t *testing.T) {
 	var day6Part1Tests = []struct {
-		orbits        []string
-		countOfOrbits int
+		input    []string
+		expected int
 	}{
-		//Provided Tests
+		//Provided Test
 		{
 			[]string{"COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L"},
 			42,
@@ -37,17 +24,16 @@ func TestDay6(t *testing.T) {
 	}
 
 	for _, test := range day6Part1Tests {
-		assert.Equal(test.countOfOrbits, Day6(test.orbits))
+		assert.Equal(t, test.expected, Day6Part1(test.input))
 	}
+}
 
-	//Verified Solution
-	// helpers.AdventWrapperInt("6", "1", day6(strings))
-
-	var day6Part2Tests = []struct {
-		orbits        []string
-		countOfOrbits int
+func TestDay6Part2(t *testing.T) {
+	tests := []struct {
+		input    []string
+		expected int
 	}{
-		//Provided Tests
+		//Provided Test
 		{
 			[]string{"COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L", "K)YOU", "I)SAN"},
 			4,
@@ -59,10 +45,7 @@ func TestDay6(t *testing.T) {
 		},
 	}
 
-	for _, test := range day6Part2Tests {
-		assert.Equal(test.countOfOrbits, Day6Part2(test.orbits))
+	for _, test := range tests {
+		assert.Equal(t, test.expected, Day6Part2(test.input))
 	}
-
-	//Verified Solution
-	// helpers.AdventWrapperInt("6", "2", day6Part2(strings))
 }

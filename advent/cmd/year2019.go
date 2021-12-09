@@ -27,26 +27,26 @@ var days2019 = map[string]day{
 		}},
 	"03": {
 		Function: func() {
-			// TODO this needs redoing to ensure correct result and testing
-			// data := helpers.ReadStringArray(dataDirectory2019 + "day3.csv")
-			// fmt.Println(advent2019.Day3(data[0], data[1], advent2019.Day3Manhattan))
+			data := helpers.ReadStringCSV(dataDirectory2019 + "day3.csv")
+			fmt.Println(advent2019.Day3(data[0], data[1], advent2019.Day3Manhattan))
+			// fmt.Println(advent2019.Day3(data[0], data[1], advent2019.Day3Steps))
 		}},
 	"04": {
 		Function: func() {
-			// TODO this needs redoing to ensure correct result and testing
 			fmt.Println(advent2019.Day4("353096-843212", advent2019.Day4Rules1))
 			fmt.Println(advent2019.Day4("353096-843212", advent2019.Day4Rules2))
 		}},
 	"05": {
 		Function: func() {
-			// TODO this needs redoing to ensure correct result and testing
-			data := helpers.ReadIntArray(dataDirectory2019 + "day5.csv")
+			data := helpers.ReadIntCSV(dataDirectory2019 + "day5.csv")[0]
 			fmt.Println(advent2019.Day5("1", data...))
 			fmt.Println(advent2019.Day5("5", data...))
 		}},
 	"06": {
 		Function: func() {
-			// TODO this needs redoing to ensure correct result and testing
+			data := helpers.ReadStringArray(dataDirectory2019 + "day6.txt")
+			fmt.Println(advent2019.Day6Part1(data))
+			fmt.Println(advent2019.Day6Part2(data))
 		}},
 }
 

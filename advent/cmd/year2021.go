@@ -42,6 +42,27 @@ var days2021 = map[string]day{
 			fmt.Println(advent2021.Day5Part1(input))
 			fmt.Println(advent2021.Day5Part2(input))
 		}},
+	"06": {
+		Function: func() {
+			input := helpers.ReadIntCSV(dataDirectory2021 + "day6.txt")
+			// Note: Only the first line from the input is required
+			fmt.Println(advent2021.Day6Part1(input[0], 80))
+			// fmt.Println(advent2021.Day6Part2(input[0], 256))
+		}},
+	"07": {
+		Function: func() {
+			input := helpers.ReadIntCSV(dataDirectory2021 + "day7.txt")
+			// Note: Only the first line from the input is required
+			fmt.Println(advent2021.Day7Part1(input[0]...))
+			fmt.Println(advent2021.Day7Part2(input[0]...))
+		}},
+	"08": {
+		Function: func() {
+			input := helpers.ReadStringArray(dataDirectory2021 + "day8.txt")
+			// Note: Only the first line from the input is required
+			fmt.Println(advent2021.Day8Part1(input))
+			fmt.Println(advent2021.Day8Part2(input))
+		}},
 }
 
 // year2021Cmd represents the year2021 command

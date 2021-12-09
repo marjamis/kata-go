@@ -38,3 +38,21 @@ func Abs(x int) int {
 func ManhattansDistance(x1, y1, x2, y2 int) int {
 	return Abs(x1-x2) + Abs(y1-y2)
 }
+
+// DecimalPositionOf returns a decimal position that a number can be times against to move the decimal position of any number
+func DecimalPositionOf(desiredPosition int) (positionValue int) {
+	/*
+		Useful if you have an integer of 7 that needs to be in the 3rd decimal poition (i.e. be 700) you would use this as:
+			return DecimalPositionOf(3) * 7   // 700
+		Other examples:
+			return DecimalPositionOf(1) * 7   // 7
+			return DecimalPositionOf(2) * 7   // 70
+			return DecimalPositionOf(7) * 7   // 7000000
+	*/
+	positionValue = 1
+	for i := 0; i < desiredPosition; i++ {
+		positionValue *= 10
+	}
+
+	return
+}

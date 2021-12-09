@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Day4Rules1 uses the rules to determine if there is a match
 func Day4Rules1(num int) bool {
 	snum := strconv.Itoa(num)
 
@@ -25,6 +26,7 @@ func Day4Rules1(num int) bool {
 	return hasSameAdjacent && isAscending
 }
 
+// Day4Rules2 uses the updated rules to determine if there is a match
 func Day4Rules2(num int) bool {
 	snum := strconv.Itoa(num)
 
@@ -55,7 +57,7 @@ func Day4Rules2(num int) bool {
 	return hasSameAdjacent && isAscending
 }
 
-// Day4 function
+// Day4 returns the count of matches based on the provided func to use for validation
 func Day4(rng string, f func(int) bool) int {
 	r := strings.Split(rng, "-")
 	start, _ := strconv.Atoi(r[0])

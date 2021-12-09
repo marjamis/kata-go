@@ -1,10 +1,10 @@
 package advent2019
 
 import (
-	"fmt"
 	"strconv"
 )
 
+// day5OpcodeBreak takes the operation details and breaks into it's relevant parts
 func day5OpcodeBreak(data int) (int, int, int, int) {
 	opcode := (data % 10) + ((data / 10 % 10) * 10)
 	p1 := data / 100 % 10
@@ -14,23 +14,27 @@ func day5OpcodeBreak(data int) (int, int, int, int) {
 	return opcode, p1, p2, p3
 }
 
-// Day5 function
-func Day5(systemID string, v ...int) ([]int, int) {
+// Day5 returns the modified instruction set and the diagnostic code
+func Day5(systemID string, providedInstructions ...int) ([]int, int) {
+	// Makes a copy of the data as it's modified through the process
+	instructions := make([]int, len(providedInstructions))
+	copy(instructions, providedInstructions)
+
 	position := 0
 	output := 0
 
 	modeSelector := func(position int, p1 int, p2 int) (x int, y int) {
 		if p1 == 0 {
-			x = v[v[position+1]]
+			x = instructions[instructions[position+1]]
 		} else {
-			x = v[position+1]
+			x = instructions[position+1]
 		}
 
 		if p2 != -1 {
 			if p2 == 0 {
-				y = v[v[position+2]]
+				y = instructions[instructions[position+2]]
 			} else {
-				y = v[position+2]
+				y = instructions[position+2]
 			}
 		}
 
@@ -38,31 +42,30 @@ func Day5(systemID string, v ...int) ([]int, int) {
 	}
 
 	for true {
-		opcode, p1, p2, _ := day5OpcodeBreak(v[position])
+		opcode, p1, p2, _ := day5OpcodeBreak(instructions[position])
 		switch opcode {
 		case 1:
-			//Addition
+			// Addition
 			x, y := modeSelector(position, p1, p2)
-			v[v[position+3]] = x + y
+			instructions[instructions[position+3]] = x + y
 			position += 4
 		case 2:
-			//Multiplication
+			// Multiplication
 			x, y := modeSelector(position, p1, p2)
-			v[v[position+3]] = x * y
+			instructions[instructions[position+3]] = x * y
 			position += 4
 		case 3:
-			//Input for a parameter
+			// Input for a parameter
 			systemIDI, _ := strconv.Atoi(systemID)
-			v[v[position+1]] = systemIDI
+			instructions[instructions[position+1]] = systemIDI
 			position += 2
 		case 4:
-			//Output value of parameter
+			// Output value of parameter
 			x, _ := modeSelector(position, p1, -1)
-			fmt.Printf("%d, ", x)
 			output = x
 			position += 2
 		case 5:
-			//jump-if-true
+			// Jump-if-true
 			x, y := modeSelector(position, p1, p2)
 			if x != 0 {
 				position = y
@@ -70,7 +73,7 @@ func Day5(systemID string, v ...int) ([]int, int) {
 				position += 3
 			}
 		case 6:
-			//jump-if-false
+			// Jump-if-false
 			x, y := modeSelector(position, p1, p2)
 			if x == 0 {
 				position = y
@@ -78,26 +81,26 @@ func Day5(systemID string, v ...int) ([]int, int) {
 				position += 3
 			}
 		case 7:
-			//less than
+			// Less than
 			x, y := modeSelector(position, p1, p2)
 			if x < y {
-				v[v[position+3]] = 1
+				instructions[instructions[position+3]] = 1
 			} else {
-				v[v[position+3]] = 0
+				instructions[instructions[position+3]] = 0
 			}
 			position += 4
 		case 8:
-			//equals
+			// Equals
 			x, y := modeSelector(position, p1, p2)
 			if x == y {
-				v[v[position+3]] = 1
+				instructions[instructions[position+3]] = 1
 			} else {
-				v[v[position+3]] = 0
+				instructions[instructions[position+3]] = 0
 			}
 			position += 4
 		case 99:
-			//End of app
-			return v, output
+			// End of app
+			return instructions, output
 		default:
 			return nil, 0
 		}

@@ -1,46 +1,23 @@
 package advent2019
 
 import (
-	"encoding/csv"
-	"os"
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDay5(t *testing.T) {
-	assert := assert.New(t)
-
-	fn := "../../../test/advent2019/day5Data.csv"
-	// t.FileExists(fn)
-	data, _ := os.Open(fn)
-	r := csv.NewReader(data)
-	var ints []int
-	record, _ := r.Read()
-	for _, value := range record {
-		d, _ := strconv.Atoi(value)
-		ints = append(ints, d)
-	}
-
-	p2Ints := make([]int, len(ints))
-	copy(p2Ints, ints)
-
-	//Part 1 - https://adventofcode.com/2019/day/5
-	//My tests to build it up
+func TestDay5OpcodeBreak(t *testing.T) {
 	opcode, p1, p2, p3 := day5OpcodeBreak(1102)
-	assert.Equal(2, opcode)
-	assert.Equal(1, p1)
-	assert.Equal(1, p2)
-	assert.Equal(0, p3)
-
-	//conver to tdd
-	// var output int
-
-	var day5Tests = []struct {
-		code        string
-		input       []int
-		resultArray []int
+	assert.Equal(t, 2, opcode)
+	assert.Equal(t, 1, p1)
+	assert.Equal(t, 1, p2)
+	assert.Equal(t, 0, p3)
+}
+func TestDay5(t *testing.T) {
+	var tests = []struct {
+		code     string
+		input    []int
+		expected []int
 	}{
 		{
 			"1",
@@ -77,24 +54,19 @@ func TestDay5(t *testing.T) {
 			[]int{1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50},
 			[]int{3500, 9, 10, 70, 2, 3, 11, 0, 99, 30, 40, 50},
 		},
-		//Part 2 tests
-
 	}
 
-	for _, test := range day5Tests {
+	for _, test := range tests {
 		responseArray, _ := Day5(test.code, test.input...)
-		assert.ElementsMatch(test.resultArray, responseArray)
+		assert.ElementsMatch(t, test.expected, responseArray)
 	}
+}
 
-	//Verified Solution
-	// helpers.AdventWrapper("5", "1")
-	// day5("1", ints...)
-	// fmt.Println()
-
-	var day5TestsP2 = []struct {
-		code       string
-		input      []int
-		resultCode int
+func TestDay5Part2(t *testing.T) {
+	tests := []struct {
+		code     string
+		input    []int
+		expected int
 	}{
 		{
 			"8",
@@ -133,14 +105,8 @@ func TestDay5(t *testing.T) {
 		},
 	}
 
-	for _, test := range day5TestsP2 {
+	for _, test := range tests {
 		_, code := Day5(test.code, test.input...)
-		assert.Equal(test.resultCode, code)
+		assert.Equal(t, test.expected, code)
 	}
-
-	//Verified Solution
-	// fmt.Printf("\n")
-	// _, output = day5("5", p2Ints...)
-	// fmt.Printf("\n")
-	// helpers.AdventWrapperInt("5", "2", output)
 }

@@ -44,24 +44,35 @@ var days2021 = map[string]day{
 		}},
 	"06": {
 		Function: func() {
-			input := helpers.ReadIntCSV(dataDirectory2021 + "day6.txt")
-			// Note: Only the first line from the input is required
-			fmt.Println(advent2021.Day6Part1(input[0], 80))
+			// Only the first line from the input is required
+			input := helpers.ReadIntCSV(dataDirectory2021 + "day6.csv")[0]
+			fmt.Println(advent2021.Day6Part1(input, 80))
 			// fmt.Println(advent2021.Day6Part2(input[0], 256))
 		}},
 	"07": {
 		Function: func() {
-			input := helpers.ReadIntCSV(dataDirectory2021 + "day7.txt")
-			// Note: Only the first line from the input is required
-			fmt.Println(advent2021.Day7Part1(input[0]...))
-			fmt.Println(advent2021.Day7Part2(input[0]...))
+			// Only the first line from the input is required
+			input := helpers.ReadIntCSV(dataDirectory2021 + "day7.csv")[0]
+			fmt.Println(advent2021.Day7Part1(input...))
+			fmt.Println(advent2021.Day7Part2(input...))
 		}},
 	"08": {
 		Function: func() {
 			input := helpers.ReadStringArray(dataDirectory2021 + "day8.txt")
-			// Note: Only the first line from the input is required
 			fmt.Println(advent2021.Day8Part1(input))
 			fmt.Println(advent2021.Day8Part2(input))
+		}},
+	"09": {
+		Function: func() {
+			input := helpers.ReadStringArray(dataDirectory2021 + "day9.txt")
+			fmt.Println(advent2021.Day9Part1(input))
+			// fmt.Println(advent2021.Day8Part2(input))
+		}},
+	"10": {
+		Function: func() {
+			input := helpers.ReadStringArray(dataDirectory2021 + "day10.txt")
+			fmt.Println(advent2021.Day10Part1(input))
+			fmt.Println(advent2021.Day10Part2(input))
 		}},
 }
 

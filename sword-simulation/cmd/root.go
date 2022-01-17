@@ -94,6 +94,7 @@ func intro() {
 	fmt.Println()
 }
 
+// simulate manipulates slices to determine who the surivor will be
 func simulate(persons Persons) (survivors Persons) {
 	var toRemove []int
 
@@ -114,6 +115,10 @@ func simulate(persons Persons) (survivors Persons) {
 		persons = append(persons[:indexToRemove], persons[indexToRemove+1:]...)
 	}
 
+	if len(persons) > 1 {
+		persons = simulate(persons)
+	}
+
 	return persons
 }
 
@@ -121,12 +126,8 @@ func run(numberOfPeople int) Person {
 	// Setup
 	persons := setup(numberOfPeople)
 
-	// Simulate - Loops until there is only one person left
-	for len(persons) > 1 {
-		persons = simulate(persons)
-	}
-
-	return persons[0]
+	// Simulates and returns the survivor
+	return simulate(persons)[0]
 }
 
 func outro() {

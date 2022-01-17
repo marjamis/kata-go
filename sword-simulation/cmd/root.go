@@ -28,7 +28,8 @@ import (
 var (
 	cfgFile             string
 	numberOfPeopleToUse int
-	introText           = "{{.Number}} people standing in a circle in an order 1 to {{.Number}}. No. 1 has a sword. He kills the next person (i.e. No. 2) and gives the sword to the next (i.e. No. 3). All people do the same until only 1 survives. Who will survive at the last?"
+	introText           = "{{.Number}} persons standing in a circle in an order 1 to {{.Number}}. No. 1 has a sword. He kills the next person (i.e. No. 2) and gives the sword to the next (i.e. No. 3). All persons do the same until only 1 survives. Who will survive at the last?"
+	outroText           = "And there you have it. Now you know where to stand..."
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -52,7 +53,7 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().IntVarP(&numberOfPeopleToUse, "Number of People to use", "n", 293, "Sets the number of people in the circle")
+	rootCmd.Flags().IntVarP(&numberOfPeopleToUse, "Number of People to use", "n", 293, "Sets the number of persons in the circle")
 }
 
 // Person contains the details of a person in the circle
@@ -64,15 +65,15 @@ type Person struct {
 type Persons []Person
 
 func setup(numberOfPeople int) Persons {
-	// Create the array with the required number of Persons
-	people := make([]Person, numberOfPeople)
+	// Creates the array with the required number of Persons
+	persons := make([]Person, numberOfPeople)
 
-	// Loop through each person and set their appropriate number based off the index
-	for index := range people {
-		people[index].Number = index + 1
+	// Loop through each Person and set their appropriate number based off the index
+	for index := range persons {
+		persons[index].Number = index + 1
 	}
 
-	return people
+	return persons
 }
 
 func intro() {
@@ -93,39 +94,41 @@ func intro() {
 	fmt.Println()
 }
 
-func simulate(people Persons) (survivors Persons) {
+func simulate(persons Persons) (survivors Persons) {
 	var toRemove []int
 
-	for i := 0; i < len(people); i = i + 2 {
+	for i := 0; i < len(persons); i = i + 2 {
 		// Killing the person next to them
-		if i+2 <= len(people) {
+		if i+2 <= len(persons) {
 			toRemove = append(toRemove, i+1)
 		} else {
 			toRemove = append(toRemove, 0)
 		}
 	}
 
+	// Sorts the indexes and puts them in reverse to allow deletion backwards through the array. This ensure the order isn't upset
 	sort.Sort(sort.Reverse(sort.IntSlice(toRemove)))
 
+	// At the end of each run it removes the "dead" persons
 	for _, indexToRemove := range toRemove {
-		people = append(people[:indexToRemove], people[indexToRemove+1:]...)
+		persons = append(persons[:indexToRemove], persons[indexToRemove+1:]...)
 	}
 
-	return people
+	return persons
 }
 
 func run(numberOfPeople int) Person {
 	// Setup
-	people := setup(numberOfPeople)
+	persons := setup(numberOfPeople)
 
-	// Simulate
-	for len(people) > 1 {
-		people = simulate(people)
+	// Simulate - Loops until there is only one person left
+	for len(persons) > 1 {
+		persons = simulate(persons)
 	}
 
-	return people[0]
+	return persons[0]
 }
 
 func outro() {
-	fmt.Println("\n\nAnd there you have it. Now you know where to stand...")
+	fmt.Printf("\n\n%s\n", outroText)
 }

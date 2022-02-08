@@ -25,7 +25,7 @@ func requestGeneration(method string, path string, body io.Reader) (*httptest.Re
 }
 func TestProductHandler(t *testing.T) {
 	t.Run("Valid product key provided", func(t *testing.T) {
-		rr, err := requestGeneration("Get", "/products/5", nil)
+		rr, err := requestGeneration("GET", "/products/5", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -35,7 +35,7 @@ func TestProductHandler(t *testing.T) {
 	})
 
 	t.Run("Product key not provided", func(t *testing.T) {
-		rr, err := requestGeneration("Get", "/products", nil)
+		rr, err := requestGeneration("GET", "/products", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -46,7 +46,7 @@ func TestProductHandler(t *testing.T) {
 
 func TestArticlesCategoryHandler(t *testing.T) {
 	t.Run("Valid article category provided", func(t *testing.T) {
-		rr, err := requestGeneration("Get", "/articles/5", nil)
+		rr, err := requestGeneration("GET", "/articles/5", nil)
 		if err != nil {
 			t.Fatal(err)
 		}

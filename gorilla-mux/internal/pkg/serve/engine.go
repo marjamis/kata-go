@@ -28,9 +28,15 @@ func Serve() {
 
 func createMuxRouter() *mux.Router {
 	router := mux.NewRouter()
-	router.HandleFunc("/products/{key}", ProductHandler)
-	router.HandleFunc("/articles/{category}", ArticlesCategoryHandler)
-	router.HandleFunc("/articles/{category}/{id:[0-9]+}", ArticleHandler)
+	router.HandleFunc("/products/{key}", ProductHandler).
+		Methods("GET").
+		Schemes("http")
+
+	// Creates a sub route which can be used to "namespace" matching routes
+	// In this case I've created ones for "/articles/" and then adding routes to the subrouter
+	articleSubRouter := router.PathPrefix("/articles/").Subrouter()
+	articleSubRouter.HandleFunc("/{category}", ArticlesCategoryHandler)
+	articleSubRouter.HandleFunc("/{category}/{id:[0-9]+}", ArticleHandler)
 
 	return router
 }

@@ -14,7 +14,8 @@ command:
 	$$GOBIN/gmux serve
 
 build: ## Builds the application
-	# TODO add golang docker versions as this is how they should all be built
+	# TODO add golang docker versions as this is how they should all be built and run... Think about and update gist
+	# docker run --rm -v "$$PWD":/usr/src/gmux -w /usr/src/gmux golang:1.17.6-alpine3.15 go build -v
 	go build -o $$GOBIN/gmux main.go 
 
 test: build ## Builds and then runs tests against the application
@@ -26,6 +27,6 @@ run: ## Runs the prod version of the application
 	$(MAKE) command PORT="8888"
 
 dev: ## Runs a dev version of the application
-	go run main.go serve
+	PORT="8888" go run main.go serve
 
 clean: ## Cleans up any old/unneeded items

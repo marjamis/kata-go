@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -22,23 +23,59 @@ func Serve() {
 		ReadTimeout:  5 * time.Second,
 	}
 
-	fmt.Printf("Server running on %s:%s\n", "127.0.0.1", os.Getenv("PORT"))
+	log.Printf("Server running on %s:%s\n", "127.0.0.1", os.Getenv("PORT"))
 	log.Fatal(srv.ListenAndServe())
 }
 
 func createMuxRouter() *mux.Router {
+	// For more information about the matched, subrouters, etc. be sure to visit
+	// the official documentation: https://github.com/gorilla/mux
+
+	// Creates a new parent router
 	router := mux.NewRouter()
+
+	// Creates a new router on the parent router that will use the ProductHandler for processing
+	// if the Methods and Schemes match what's defined
 	router.HandleFunc("/products/{key}", ProductHandler).
 		Methods("GET").
 		Schemes("http")
+	// This logging middleware will be used for all routes configured under this specific router but
+	// not subrouters
+	router.Use(loggingMiddleware)
 
-	// Creates a sub route which can be used to "namespace" matching routes
-	// In this case I've created ones for "/articles/" and then adding routes to the subrouter
-	articleSubRouter := router.PathPrefix("/articles/").Subrouter()
-	articleSubRouter.HandleFunc("/{category}", ArticlesCategoryHandler)
-	articleSubRouter.HandleFunc("/{category}/{id:[0-9]+}", ArticleHandler)
+	// Creates a subrouter off of the parent which can be used to "namespace" matching routes
+	// In this case I've created ones for "/articles/" and are then adding subroutes to the "/articles" path
+	articlesSubRouter := router.PathPrefix("/articles/").Subrouter()
+	articlesSubRouter.HandleFunc("/{category}", ArticlesCategoryHandler)
+	articlesSubRouter.HandleFunc("/{category}/{id:[0-9]+}", ArticleHandler)
+	// This middleware will be used for routes under the articlesSubRouter on top off any other
+	// middleware that may be called before it
+	articlesSubRouter.Use(blockingMiddleware)
 
 	return router
+}
+
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.RequestURI)
+		next.ServeHTTP(w, r)
+	})
+}
+
+func blockingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// This is a simple check which will not call next.ServerHTTP(), hence not execute
+		// the normal HandleFunc for the path, essentially stopping the normal processing of the request
+		magicNumber := "6"
+		if strings.Contains(r.URL.Path, magicNumber) {
+			log.Printf("The requests path contains the number %s, Aborting request...\n", magicNumber)
+			// I'm writing to the ResponseWriter to generate the InternalServerError
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 // ProductHandler is used for the route that gets information about a product

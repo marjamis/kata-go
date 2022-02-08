@@ -94,3 +94,23 @@ func TestArticleHandler(t *testing.T) {
 		assert.Equal(t, http.StatusNotFound, rr.Code)
 	})
 }
+
+func TestBlockingMiddleware(t *testing.T) {
+	t.Run("Testing blockingMiddleware and the evil 6", func(t *testing.T) {
+		tests := []struct {
+			badPath string
+		}{
+			{"/articles/6"},
+			{"/articles/6/1"},
+		}
+
+		for _, test := range tests {
+			rr, err := requestGeneration("GET", test.badPath, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, rr.Code)
+		}
+	})
+}

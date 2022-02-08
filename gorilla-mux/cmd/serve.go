@@ -16,8 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/marjamis/kata-go/gorilla-mux/internal/pkg/serve"
 	"github.com/spf13/cobra"
 )
@@ -27,7 +25,6 @@ var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Runs the sample gorilla/mux implementation",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("serve called")
 		serve.Serve()
 	},
 }

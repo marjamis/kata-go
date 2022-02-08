@@ -12,26 +12,27 @@ import (
 
 // Serve is the entry of running the webserver that will use gorilla/mux
 func Serve() {
-	r := createMuxRouter()
-	http.Handle("/", r)
+	router := createMuxRouter()
+	http.Handle("/", router)
 
 	srv := &http.Server{
-		Handler:      r,
+		Handler:      router,
 		Addr:         "127.0.0.1:" + os.Getenv("PORT"),
 		WriteTimeout: 5 * time.Second,
 		ReadTimeout:  5 * time.Second,
 	}
 
+	fmt.Printf("Server running on %s:%s\n", "127.0.0.1", os.Getenv("PORT"))
 	log.Fatal(srv.ListenAndServe())
 }
 
 func createMuxRouter() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/products/{key}", ProductHandler)
-	r.HandleFunc("/articles/{category}", ArticlesCategoryHandler)
-	r.HandleFunc("/articles/{category}/{id:[0-9]+}", ArticleHandler)
+	router := mux.NewRouter()
+	router.HandleFunc("/products/{key}", ProductHandler)
+	router.HandleFunc("/articles/{category}", ArticlesCategoryHandler)
+	router.HandleFunc("/articles/{category}/{id:[0-9]+}", ArticleHandler)
 
-	return r
+	return router
 }
 
 // ProductHandler is used for the route that gets information about a product

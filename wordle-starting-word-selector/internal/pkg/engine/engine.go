@@ -60,15 +60,21 @@ func openDictionaryFile() {
 }
 
 // Engine is the workflow controller for finding a good starting word
-func Engine(length int, scrabbleValue int) {
+func Engine(length int, scrabbleValue int, fullList bool) {
 	openDictionaryFile()
 
-	word, err := getWord(length, scrabbleValue)
-	if err != nil {
-		fmt.Printf("There is an error of: %s\n", err.Error())
-	}
+	if fullList {
+		words := getWords(length, scrabbleValue)
+		fmt.Printf("There are %d words available with these filters...\n\n", len(words))
+		fmt.Println(words)
+	} else {
+		word, err := getWord(length, scrabbleValue)
+		if err != nil {
+			fmt.Printf("There is an error of: %s\n", err.Error())
+		}
 
-	fmt.Println(word)
+		fmt.Println(word)
+	}
 }
 
 func getScrabbleValue(word string) (scrabbleValue int) {

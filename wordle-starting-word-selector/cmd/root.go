@@ -34,6 +34,7 @@ import (
 var (
 	length        *int
 	scrabbleValue *int
+	fullList      *bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -41,7 +42,7 @@ var rootCmd = &cobra.Command{
 	Use:   "wsws",
 	Short: "Generates a starting word for wordle",
 	Run: func(cmd *cobra.Command, args []string) {
-		engine.Engine(*length, *scrabbleValue)
+		engine.Engine(*length, *scrabbleValue, *fullList)
 	},
 }
 
@@ -57,4 +58,5 @@ func Execute() {
 func init() {
 	length = rootCmd.Flags().IntP("length", "l", 5, "The length of words to find")
 	scrabbleValue = rootCmd.Flags().IntP("scrabble-value", "s", 8, "The scrabble value of the word to find")
+	fullList = rootCmd.Flags().BoolP("full-list", "f", false, "Set to true to return all available words from filters and not a randome word")
 }

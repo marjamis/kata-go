@@ -15,10 +15,13 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.16
+        
+    - name: Build
+      run: go build -v -o wsws ./...
 
     - name: Run binary
       run: |
-        go run main.go -s 5 -l 5 -d > /tmp/gist
+        wsws -s 5 -l 5 -d > /tmp/gist
 
   gist-sync:
     needs: build

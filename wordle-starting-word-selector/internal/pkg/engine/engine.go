@@ -1,9 +1,11 @@
 package engine
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -38,18 +40,29 @@ var (
 		'z': 10,
 	}
 
-	dict = dictionary{
-		"hello",
-		"no",
-		"pause",
-		"mo",
-	}
+	dict = dictionary{}
 )
 
 type dictionary []string
 
+func openDictionaryFile() {
+	fdata, _ := os.Open("configs/dictionary.txt")
+	defer fdata.Close()
+
+	strings := []string{}
+	scanner := bufio.NewScanner(fdata)
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		strings = append(strings, scanner.Text())
+	}
+
+	dict = strings
+}
+
 // Engine is the workflow controller for finding a good starting word
 func Engine(length int, scrabbleValue int) {
+	openDictionaryFile()
+
 	word, err := getWord(length, scrabbleValue)
 	if err != nil {
 		fmt.Printf("There is an error of: %s\n", err.Error())

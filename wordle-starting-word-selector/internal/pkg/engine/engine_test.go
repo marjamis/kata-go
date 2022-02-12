@@ -85,3 +85,14 @@ func TestFilterScrabbleValue(t *testing.T) {
 		}
 	}
 }
+
+func init() {
+	// Sample dictionary for testing
+	// TODO rethink this as not in love with it but works for now
+	dict = dictionary{
+		"hello",
+		"no",
+		"pause",
+		"mo",
+	}
+}

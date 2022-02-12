@@ -29,6 +29,7 @@ func TestGetSelectedWord(t *testing.T) {
 		{2, 2},
 	}
 
+	// TODO fix these tests as they're too brittle with more filters being added
 	for _, test := range tests {
 		word, _ := getWord(test.inputLen, test.inputScrabbleValue)
 		assert.Len(t, word, test.inputLen)
@@ -86,6 +87,36 @@ func TestFilterScrabbleValue(t *testing.T) {
 	}
 }
 
+func TestContainsDuplicates(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected bool
+	}{
+		{"hello", true},
+		{"heaph", true},
+		{"pause", false},
+	}
+
+	for _, test := range tests {
+		assert.Equal(t, test.expected, hasDuplicateLetters(test.input))
+	}
+}
+
+func TestFilterDuplicateLetters(t *testing.T) {
+	wordList := dictionary{
+		"hello",
+		"no",
+		"pause",
+		"mo",
+	}
+	expected := dictionary{
+		"no",
+		"pause",
+		"mo",
+	}
+	assert.ElementsMatch(t, expected, wordList.filterDuplicateLetters())
+}
+
 func init() {
 	// Sample dictionary for testing
 	// TODO rethink this as not in love with it but works for now
@@ -94,5 +125,6 @@ func init() {
 		"no",
 		"pause",
 		"mo",
+		"yurts",
 	}
 }

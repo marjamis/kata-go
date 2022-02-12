@@ -56,6 +56,7 @@ func Execute() {
 }
 
 func init() {
+	// TODO fix the int defaults as not sure these shoul be the ones, if any?
 	length = rootCmd.Flags().IntP("length", "l", 5, "The length of words to find")
 	scrabbleValue = rootCmd.Flags().IntP("scrabble-value", "s", 8, "The scrabble value of the word to find")
 	fullList = rootCmd.Flags().BoolP("full-list", "f", false, "Set to true to return all available words from filters and not a randome word")

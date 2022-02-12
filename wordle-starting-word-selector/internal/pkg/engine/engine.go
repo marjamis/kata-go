@@ -105,12 +105,35 @@ func (wl dictionary) filterScrabbleValue(value int) (newWordList dictionary) {
 	return
 }
 
+func hasDuplicateLetters(word string) bool {
+	for i, testingChar := range word {
+		for j, char := range word {
+			if (i != j) && (char == testingChar) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func (wl dictionary) filterDuplicateLetters() (newWordList dictionary) {
+	for _, word := range wl {
+		if !hasDuplicateLetters(word) {
+			newWordList = append(newWordList, word)
+		}
+	}
+
+	return
+}
+
 func getWords(length int, scrabbleValue int) (words dictionary) {
 	wordList := dict
 
 	return wordList.
 		filterLen(length).
-		filterScrabbleValue(scrabbleValue)
+		filterScrabbleValue(scrabbleValue).
+		filterDuplicateLetters()
 }
 
 func getWord(length int, scrabbleValue int) (word string, err error) {

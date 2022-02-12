@@ -67,7 +67,6 @@ func Engine(length int, scrabbleValue int, fullList bool, filterDuplicates bool)
 	openDictionaryFile()
 	words := words
 
-	// TODO fix this method return and usage view
 	// -1 is the cobra flag default to indicate any length
 	if length != -1 {
 		words = words.filterLength(length)

@@ -46,14 +46,13 @@ func TestGetSelectedWord(t *testing.T) {
 		for _, test := range tests {
 			_, err := getWord(test.inputLen, test.inputScrabbleValue)
 			if assert.Error(t, err) {
-				// TODO fix this into a proper error check
 				assert.Equal(t, "No available word", err.Error())
 			}
 		}
 	})
 }
 
-func TestFilterWordListLength(t *testing.T) {
+func TestFilterWordLength(t *testing.T) {
 	tests := []struct {
 		len int
 	}{

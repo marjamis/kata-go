@@ -32,9 +32,10 @@ import (
 )
 
 var (
-	length        *int
-	scrabbleValue *int
-	fullList      *bool
+	length           *int
+	scrabbleValue    *int
+	fullList         *bool
+	filterDuplicates *bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -42,7 +43,7 @@ var rootCmd = &cobra.Command{
 	Use:   "wsws",
 	Short: "Generates a starting word for wordle",
 	Run: func(cmd *cobra.Command, args []string) {
-		engine.Engine(*length, *scrabbleValue, *fullList)
+		engine.Engine(*length, *scrabbleValue, *fullList, *filterDuplicates)
 	},
 }
 
@@ -56,8 +57,8 @@ func Execute() {
 }
 
 func init() {
-	// TODO fix the int defaults as not sure these shoul be the ones, if any?
-	length = rootCmd.Flags().IntP("length", "l", 5, "The length of words to find")
-	scrabbleValue = rootCmd.Flags().IntP("scrabble-value", "s", 8, "The scrabble value of the word to find")
-	fullList = rootCmd.Flags().BoolP("full-list", "f", false, "Set to true to return all available words from filters and not a randome word")
+	length = rootCmd.Flags().IntP("length", "l", -1, "the length of words to find. -1 means all lengths")
+	scrabbleValue = rootCmd.Flags().IntP("scrabble-value", "s", -1, "the scrabble value of the word to find. -1 means all values")
+	fullList = rootCmd.Flags().BoolP("full-list", "f", false, "set to true to return all available words from filters rather than a random word")
+	filterDuplicates = rootCmd.Flags().BoolP("filter-duplicates", "d", false, "set to true to filter any duplicates out of the words to find")
 }

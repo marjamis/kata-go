@@ -6,6 +6,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	defaultTestingDictionary = Words{
+		"hello",
+		"no",
+		"pause",
+		"mo",
+		"yurts",
+	}
+)
+
 func TestScrabbleValue(t *testing.T) {
 	tests := []struct {
 		input                 string
@@ -20,40 +30,8 @@ func TestScrabbleValue(t *testing.T) {
 	}
 }
 
-func TestGetSelectedWord(t *testing.T) {
-	tests := []struct {
-		inputLen           int
-		inputScrabbleValue int
-	}{
-		{5, 8},
-		{2, 2},
-	}
-
-	// TODO fix these tests as they're too brittle with more filters being added
-	for _, test := range tests {
-		word, _ := getWord(test.inputLen, test.inputScrabbleValue)
-		assert.Len(t, word, test.inputLen)
-		assert.Equal(t, test.inputScrabbleValue, getScrabbleValue(word))
-	}
-
-	t.Run("No match for selection criteria", func(t *testing.T) {
-		tests := []struct {
-			inputLen           int
-			inputScrabbleValue int
-		}{
-			{5, 5},
-		}
-
-		for _, test := range tests {
-			_, err := getWord(test.inputLen, test.inputScrabbleValue)
-			if assert.Error(t, err) {
-				assert.Equal(t, "No available word", err.Error())
-			}
-		}
-	})
-}
-
 func TestFilterWordLength(t *testing.T) {
+	words = defaultTestingDictionary
 	tests := []struct {
 		len int
 	}{
@@ -62,15 +40,16 @@ func TestFilterWordLength(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		wordList := dict
-		wordList = wordList.filterLen(test.len)
-		for _, word := range wordList {
+		words := words
+		words = words.filterLength(test.len)
+		for _, word := range words {
 			assert.Len(t, word, test.len)
 		}
 	}
 }
 
 func TestFilterScrabbleValue(t *testing.T) {
+	words = defaultTestingDictionary
 	tests := []struct {
 		value int
 	}{
@@ -79,9 +58,9 @@ func TestFilterScrabbleValue(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		wordList := dict
-		wordList = wordList.filterScrabbleValue(test.value)
-		for _, word := range wordList {
+		words := words
+		words = words.filterScrabbleValue(test.value)
+		for _, word := range words {
 			assert.Equal(t, test.value, getScrabbleValue(word))
 		}
 	}
@@ -103,28 +82,16 @@ func TestContainsDuplicates(t *testing.T) {
 }
 
 func TestFilterDuplicateLetters(t *testing.T) {
-	wordList := dictionary{
+	words := Words{
 		"hello",
 		"no",
 		"pause",
 		"mo",
 	}
-	expected := dictionary{
+	expected := Words{
 		"no",
 		"pause",
 		"mo",
 	}
-	assert.ElementsMatch(t, expected, wordList.filterDuplicateLetters())
-}
-
-func init() {
-	// Sample dictionary for testing
-	// TODO rethink this as not in love with it but works for now
-	dict = dictionary{
-		"hello",
-		"no",
-		"pause",
-		"mo",
-		"yurts",
-	}
+	assert.ElementsMatch(t, expected, words.filterDuplicateLetters())
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -40,10 +41,12 @@ var (
 		'z': 10,
 	}
 
-	dict = dictionary{}
+	words = Words{}
 )
 
-type dictionary []string
+// Words a list of strings that make up the available list of words. Starting from the dictionary
+// all the way down to a subset after all the filters are run
+type Words []string
 
 func openDictionaryFile() {
 	fdata, _ := os.Open("configs/dictionary.txt")
@@ -56,19 +59,43 @@ func openDictionaryFile() {
 		strings = append(strings, scanner.Text())
 	}
 
-	dict = strings
+	words = strings
 }
 
 // Engine is the workflow controller for finding a good starting word
-func Engine(length int, scrabbleValue int, fullList bool) {
+func Engine(length int, scrabbleValue int, fullList bool, filterDuplicates bool) {
 	openDictionaryFile()
+	words := words
+
+	// TODO fix this method return and usage view
+	if length != -1 {
+		words = words.filterLength(length)
+	}
+
+	if scrabbleValue != -1 {
+		words = words.filterScrabbleValue(scrabbleValue)
+	}
+
+	if filterDuplicates {
+		words = words.filterDuplicateLetters()
+	}
 
 	if fullList {
-		words := getWords(length, scrabbleValue)
-		fmt.Printf("There are %d words available with these filters...\n\n", len(words))
-		fmt.Println(words)
+		fmt.Printf("There are %d words available with these filters... Shall these be displayed (y/n)? ", len(words))
+
+		reader := bufio.NewReader(os.Stdin)
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("An error occured", err)
+			return
+		}
+		input = strings.TrimSuffix(input, "\n")
+
+		if strings.Compare(input, "y") == 0 {
+			fmt.Println(words)
+		}
 	} else {
-		word, err := getWord(length, scrabbleValue)
+		word, err := getWord(words)
 		if err != nil {
 			fmt.Printf("There is an error of: %s\n", err.Error())
 		}
@@ -85,20 +112,20 @@ func getScrabbleValue(word string) (scrabbleValue int) {
 	return
 }
 
-func (wl dictionary) filterLen(length int) (newWordList dictionary) {
-	for _, word := range wl {
+func (w Words) filterLength(length int) (newwords Words) {
+	for _, word := range w {
 		if len(word) == length {
-			newWordList = append(newWordList, word)
+			newwords = append(newwords, word)
 		}
 	}
 
 	return
 }
 
-func (wl dictionary) filterScrabbleValue(value int) (newWordList dictionary) {
-	for _, word := range wl {
+func (w Words) filterScrabbleValue(value int) (newwords Words) {
+	for _, word := range w {
 		if getScrabbleValue(word) == value {
-			newWordList = append(newWordList, word)
+			newwords = append(newwords, word)
 		}
 	}
 
@@ -117,33 +144,22 @@ func hasDuplicateLetters(word string) bool {
 	return false
 }
 
-func (wl dictionary) filterDuplicateLetters() (newWordList dictionary) {
-	for _, word := range wl {
+func (w Words) filterDuplicateLetters() (newwords Words) {
+	for _, word := range w {
 		if !hasDuplicateLetters(word) {
-			newWordList = append(newWordList, word)
+			newwords = append(newwords, word)
 		}
 	}
 
 	return
 }
 
-func getWords(length int, scrabbleValue int) (words dictionary) {
-	wordList := dict
-
-	return wordList.
-		filterLen(length).
-		filterScrabbleValue(scrabbleValue).
-		filterDuplicateLetters()
-}
-
-func getWord(length int, scrabbleValue int) (word string, err error) {
+func getWord(words Words) (word string, err error) {
 	rand.Seed(time.Now().UnixNano())
 
-	wordList := getWords(length, scrabbleValue)
-	if len(wordList) == 0 {
+	if len(words) == 0 {
 		return "", errors.New("No available word")
 	}
 
-	return wordList[rand.Intn(len(wordList))], nil
-
+	return words[rand.Intn(len(words))], nil
 }

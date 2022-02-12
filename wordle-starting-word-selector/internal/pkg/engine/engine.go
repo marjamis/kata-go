@@ -1,8 +1,107 @@
 package engine
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+var (
+	// Credit: These values were obtained from: https://www.thewordfinder.com/scrabble-point-values.php
+	scrabbleMapping = map[rune]int{
+		'a': 1,
+		'b': 3,
+		'c': 3,
+		'd': 2,
+		'e': 1,
+		'f': 4,
+		'g': 2,
+		'h': 4,
+		'i': 1,
+		'j': 8,
+		'k': 5,
+		'l': 1,
+		'm': 3,
+		'n': 1,
+		'o': 1,
+		'p': 3,
+		'q': 10,
+		'r': 1,
+		's': 1,
+		't': 1,
+		'u': 1,
+		'v': 4,
+		'w': 4,
+		'x': 8,
+		'y': 4,
+		'z': 10,
+	}
+
+	dict = dictionary{
+		"hello",
+		"no",
+		"pause",
+		"mo",
+	}
+)
+
+type dictionary []string
 
 // Engine is the workflow controller for finding a good starting word
-func Engine() {
-	fmt.Println("Stub")
+func Engine(length int, scrabbleValue int) {
+	word, err := getWord(length, scrabbleValue)
+	if err != nil {
+		fmt.Printf("There is an error of: %s\n", err.Error())
+	}
+
+	fmt.Println(word)
+}
+
+func getScrabbleValue(word string) (scrabbleValue int) {
+	for _, char := range word {
+		scrabbleValue += scrabbleMapping[char]
+	}
+
+	return
+}
+
+func (wl dictionary) filterLen(length int) (newWordList dictionary) {
+	for _, word := range wl {
+		if len(word) == length {
+			newWordList = append(newWordList, word)
+		}
+	}
+
+	return
+}
+
+func (wl dictionary) filterScrabbleValue(value int) (newWordList dictionary) {
+	for _, word := range wl {
+		if getScrabbleValue(word) == value {
+			newWordList = append(newWordList, word)
+		}
+	}
+
+	return
+}
+
+func getWords(length int, scrabbleValue int) (words dictionary) {
+	wordList := dict
+
+	return wordList.
+		filterLen(length).
+		filterScrabbleValue(scrabbleValue)
+}
+
+func getWord(length int, scrabbleValue int) (word string, err error) {
+	rand.Seed(time.Now().UnixNano())
+
+	wordList := getWords(length, scrabbleValue)
+	if len(wordList) == 0 {
+		return "", errors.New("No available word")
+	}
+
+	return wordList[rand.Intn(len(wordList))], nil
+
 }

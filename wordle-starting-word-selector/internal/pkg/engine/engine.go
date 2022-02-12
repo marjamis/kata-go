@@ -68,10 +68,12 @@ func Engine(length int, scrabbleValue int, fullList bool, filterDuplicates bool)
 	words := words
 
 	// TODO fix this method return and usage view
+	// -1 is the cobra flag default to indicate any length
 	if length != -1 {
 		words = words.filterLength(length)
 	}
 
+	// -1 is the cobra flag default to indicate any scrabble value
 	if scrabbleValue != -1 {
 		words = words.filterScrabbleValue(scrabbleValue)
 	}
@@ -112,20 +114,20 @@ func getScrabbleValue(word string) (scrabbleValue int) {
 	return
 }
 
-func (w Words) filterLength(length int) (newwords Words) {
+func (w Words) filterLength(length int) (filteredWords Words) {
 	for _, word := range w {
 		if len(word) == length {
-			newwords = append(newwords, word)
+			filteredWords = append(filteredWords, word)
 		}
 	}
 
 	return
 }
 
-func (w Words) filterScrabbleValue(value int) (newwords Words) {
+func (w Words) filterScrabbleValue(value int) (filteredWords Words) {
 	for _, word := range w {
 		if getScrabbleValue(word) == value {
-			newwords = append(newwords, word)
+			filteredWords = append(filteredWords, word)
 		}
 	}
 
@@ -144,10 +146,10 @@ func hasDuplicateLetters(word string) bool {
 	return false
 }
 
-func (w Words) filterDuplicateLetters() (newwords Words) {
+func (w Words) filterDuplicateLetters() (filteredWords Words) {
 	for _, word := range w {
 		if !hasDuplicateLetters(word) {
-			newwords = append(newwords, word)
+			filteredWords = append(filteredWords, word)
 		}
 	}
 

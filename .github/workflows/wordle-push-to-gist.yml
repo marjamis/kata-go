@@ -1,0 +1,35 @@
+name: Push Wordle Starting Word to gist
+on:
+  schedule:
+    - cron: "10 * * * *"
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+
+    - name: Run binary
+      run: |
+        go run main.go -s 5 -l 5 -d > /tmp/gist
+
+  gist-sync:
+    needs: build
+    name: gist-sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: popsiclestick/gist-sync-action@v1.2.0
+        id: sync
+        with:
+          auth: ${{ secrets.GIST_TOKEN }}
+          gist_url: https://gist.github.com/marjamis/d1434147ff1c821218fb53f1f7206174
+          gist_title: wordle-starting-word.txt
+          gist_description: Todays starting wordle word example
+          github_file: /tmp/gist

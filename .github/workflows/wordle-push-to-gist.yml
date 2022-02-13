@@ -18,12 +18,12 @@ jobs:
 
     - name: Run binary
       run: |
-        cd wordle-starting-word-selector && go run main.go -s 5 -l 5 -d | tee /tmp/gist
+        cd wordle-starting-word-selector && go run main.go -s 5 -l 5 -d | tee gist
     
     - uses: actions/upload-artifact@master
       with:
         name: gist
-        path: /tmp/gist
+        path: gist
 
   gist-sync:
     needs: build
@@ -33,7 +33,7 @@ jobs:
       - uses: actions/download-artifact@master
         with:
           name: gist
-          path: /tmp/gist
+          path: gist
       - uses: popsiclestick/gist-sync-action@v1.2.0
         id: sync
         with:
@@ -41,4 +41,4 @@ jobs:
           gist_url: https://gist.github.com/marjamis/d1434147ff1c821218fb53f1f7206174
           gist_title: wordle-starting-word.txt
           gist_description: Todays starting wordle word example
-          github_file: /tmp/gist
+          github_file: gist

@@ -36,6 +36,11 @@ jobs:
         with:
           name: gist
           path: gist
+          
+      # Debugging step as the sync is treating this as if its an empty file which it shouldnt be
+      - name: Output the artifacts content
+        run: |
+          cat gist
 
       - uses: popsiclestick/gist-sync-action@v1.2.0
         id: sync

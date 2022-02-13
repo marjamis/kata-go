@@ -29,6 +29,8 @@ jobs:
     needs: build
     name: gist-sync
     runs-on: ubuntu-latest
+    # Using an environment for access to its own ENVs incase I need greater isolation
+    environment: gist-sync
     steps:
       - uses: actions/download-artifact@master
         with:

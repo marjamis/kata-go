@@ -18,12 +18,12 @@ jobs:
 
     - name: Run binary
       run: |
-        cd wordle-starting-word-selector && go run main.go -s 5 -l 5 -d | tee gist
+        cd wordle-starting-word-selector && go run main.go -s 5 -l 5 -d | tee /tmp/gist
     
     - uses: actions/upload-artifact@master
       with:
         name: gist
-        path: gist
+        path: /tmp/gist
 
   gist-sync:
     needs: build
@@ -34,6 +34,7 @@ jobs:
         with:
           name: gist
           path: gist
+
       - uses: popsiclestick/gist-sync-action@v1.2.0
         id: sync
         with:

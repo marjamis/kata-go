@@ -35,7 +35,7 @@ jobs:
       - uses: actions/download-artifact@master
         with:
           name: gist
-          path: gist
+          path: .
           
       # Debugging step as the sync is treating this as if its an empty file which it shouldnt be
       - name: Output the artifacts content

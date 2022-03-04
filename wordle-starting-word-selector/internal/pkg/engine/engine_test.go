@@ -16,7 +16,7 @@ var (
 	}
 )
 
-func TestScrabbleValue(t *testing.T) {
+func TestGetScrabbleValue(t *testing.T) {
 	tests := []struct {
 		input                 string
 		expectedScrabbleValue int
@@ -30,64 +30,69 @@ func TestScrabbleValue(t *testing.T) {
 	}
 }
 
-func TestFilterWordLength(t *testing.T) {
-	words = defaultTestingDictionary
+func TestFilterLength(t *testing.T) {
 	tests := []struct {
-		len int
+		word     string
+		length   int
+		expected bool
 	}{
-		{5},
-		{2},
+		{"testing", 7, true},
+		{"no", 2, true},
+		{"here", 3, false},
 	}
 
 	for _, test := range tests {
-		words := words
-		words = words.filter(filterLength, test.len)
-		for _, word := range words {
-			assert.Len(t, word, test.len)
-		}
+		assert.Equal(t, test.expected, filterLength(test.word, test.length))
 	}
 }
 
 func TestFilterScrabbleValue(t *testing.T) {
-	words = defaultTestingDictionary
 	tests := []struct {
-		value int
+		word     string
+		value    int
+		expected bool
 	}{
-		{8},
-		{2},
+		{"testing", 8, true},
+		{"no", 2, true},
 	}
 
 	for _, test := range tests {
-		words := words
-		words = words.filter(filterScrabbleValue, test.value)
-		for _, word := range words {
-			assert.Equal(t, test.value, getScrabbleValue(word))
-		}
+		assert.Equal(t, test.expected, filterScrabbleValue(test.word, test.value))
 	}
 }
 
 func TestFilterDuplicateLetters(t *testing.T) {
+	tests := []struct {
+		word     string
+		expected bool
+	}{
+		{"testing", false},
+		{"no", true},
+		{"pause", true},
+		{"hello", false},
+	}
 
-	t.Run("No duplicates found", func(t *testing.T) {
-		trueWords := Words{
-			"no",
-			"pause",
-		}
+	for _, test := range tests {
+		assert.Equal(t, test.expected, filterDuplicateLetters(test.word))
+	}
+}
 
-		for _, trueWord := range trueWords {
-			assert.True(t, filterDuplicateLetters(trueWord))
+func TestFilter(t *testing.T) {
+	t.Run("All true", func(t *testing.T) {
+		trueCheck := func(word string, args ...interface{}) bool {
+			return true
 		}
+		words := defaultTestingDictionary
+		filteredWords := words.filter(trueCheck)
+		assert.ElementsMatch(t, defaultTestingDictionary, filteredWords)
 	})
 
-	t.Run("Duplicates found", func(t *testing.T) {
-		falseWords := Words{
-			"hello",
-			"testi",
+	t.Run("All false", func(t *testing.T) {
+		falseCheck := func(word string, args ...interface{}) bool {
+			return false
 		}
-
-		for _, falseWord := range falseWords {
-			assert.False(t, filterDuplicateLetters(falseWord))
-		}
+		words := defaultTestingDictionary
+		filteredWords := words.filter(falseCheck)
+		assert.ElementsMatch(t, Words{}, filteredWords)
 	})
-
 }

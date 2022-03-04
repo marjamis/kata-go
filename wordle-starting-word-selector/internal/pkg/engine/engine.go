@@ -69,16 +69,16 @@ func Engine(length int, scrabbleValue int, fullList bool, filterDuplicates bool)
 
 	// -1 is the cobra flag default to indicate any length
 	if length != -1 {
-		words = words.filterLength(length)
+		words = words.filter(filterLength, length)
 	}
 
 	// -1 is the cobra flag default to indicate any scrabble value
 	if scrabbleValue != -1 {
-		words = words.filterScrabbleValue(scrabbleValue)
+		words = words.filter(filterScrabbleValue, scrabbleValue)
 	}
 
 	if filterDuplicates {
-		words = words.filterDuplicateLetters()
+		words = words.filter(filterDuplicateLetters)
 	}
 
 	if fullList {
@@ -113,48 +113,6 @@ func getScrabbleValue(word string) (scrabbleValue int) {
 	return
 }
 
-func (w Words) filterLength(length int) (filteredWords Words) {
-	for _, word := range w {
-		if len(word) == length {
-			filteredWords = append(filteredWords, word)
-		}
-	}
-
-	return
-}
-
-func (w Words) filterScrabbleValue(value int) (filteredWords Words) {
-	for _, word := range w {
-		if getScrabbleValue(word) == value {
-			filteredWords = append(filteredWords, word)
-		}
-	}
-
-	return
-}
-
-func hasDuplicateLetters(word string) bool {
-	for i, testingChar := range word {
-		for j, char := range word {
-			if (i != j) && (char == testingChar) {
-				return true
-			}
-		}
-	}
-
-	return false
-}
-
-func (w Words) filterDuplicateLetters() (filteredWords Words) {
-	for _, word := range w {
-		if !hasDuplicateLetters(word) {
-			filteredWords = append(filteredWords, word)
-		}
-	}
-
-	return
-}
-
 func getWord(words Words) (word string, err error) {
 	rand.Seed(time.Now().UnixNano())
 
@@ -163,4 +121,34 @@ func getWord(words Words) (word string, err error) {
 	}
 
 	return words[rand.Intn(len(words))], nil
+}
+
+func (w Words) filter(check func(word string, args ...interface{}) bool, args ...interface{}) (filteredWords Words) {
+	for _, word := range w {
+		if check(word, args) {
+			filteredWords = append(filteredWords, word)
+		}
+	}
+
+	return
+}
+
+func filterLength(word string, args ...interface{}) bool {
+	return len(word) == args[0]
+}
+
+func filterScrabbleValue(word string, args ...interface{}) bool {
+	return getScrabbleValue(word) == args[0]
+}
+
+func filterDuplicateLetters(word string, args ...interface{}) bool {
+	for i, testingChar := range word {
+		for j, char := range word {
+			if (i != j) && (char == testingChar) {
+				return false
+			}
+		}
+	}
+
+	return true
 }

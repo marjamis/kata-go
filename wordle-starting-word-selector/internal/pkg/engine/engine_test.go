@@ -41,7 +41,7 @@ func TestFilterWordLength(t *testing.T) {
 
 	for _, test := range tests {
 		words := words
-		words = words.filterLength(test.len)
+		words = words.filter(filterLength, test.len)
 		for _, word := range words {
 			assert.Len(t, word, test.len)
 		}
@@ -59,39 +59,35 @@ func TestFilterScrabbleValue(t *testing.T) {
 
 	for _, test := range tests {
 		words := words
-		words = words.filterScrabbleValue(test.value)
+		words = words.filter(filterScrabbleValue, test.value)
 		for _, word := range words {
 			assert.Equal(t, test.value, getScrabbleValue(word))
 		}
 	}
 }
 
-func TestContainsDuplicates(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected bool
-	}{
-		{"hello", true},
-		{"heaph", true},
-		{"pause", false},
-	}
-
-	for _, test := range tests {
-		assert.Equal(t, test.expected, hasDuplicateLetters(test.input))
-	}
-}
-
 func TestFilterDuplicateLetters(t *testing.T) {
-	words := Words{
-		"hello",
-		"no",
-		"pause",
-		"mo",
-	}
-	expected := Words{
-		"no",
-		"pause",
-		"mo",
-	}
-	assert.ElementsMatch(t, expected, words.filterDuplicateLetters())
+
+	t.Run("No duplicates found", func(t *testing.T) {
+		trueWords := Words{
+			"no",
+			"pause",
+		}
+
+		for _, trueWord := range trueWords {
+			assert.True(t, filterDuplicateLetters(trueWord))
+		}
+	})
+
+	t.Run("Duplicates found", func(t *testing.T) {
+		falseWords := Words{
+			"hello",
+			"testi",
+		}
+
+		for _, falseWord := range falseWords {
+			assert.False(t, filterDuplicateLetters(falseWord))
+		}
+	})
+
 }

@@ -60,5 +60,5 @@ func init() {
 	length = rootCmd.Flags().IntP("length", "l", -1, "the length of words to find. -1 means all lengths")
 	scrabbleValue = rootCmd.Flags().IntP("scrabble-value", "s", -1, "the scrabble value of the word to find. -1 means all values")
 	fullList = rootCmd.Flags().BoolP("full-list", "f", false, "set to true to return all available words from filters rather than a random word")
-	filterDuplicates = rootCmd.Flags().BoolP("filter-duplicates", "d", false, "set to true to filter any duplicates out of the words to find")
+	filterDuplicates = rootCmd.Flags().BoolP("filter-duplicates", "d", true, "set to true to filter any duplicates out of the words to find")
 }

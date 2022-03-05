@@ -132,13 +132,16 @@ func (w Words) filter(check func(word string, args ...interface{}) bool, args ..
 
 	return
 }
-
 func filterLength(word string, args ...interface{}) bool {
-	return len(word) == args[0]
+	p := args[0].(interface{})
+	l := p.([]interface{})[0]
+	return len(word) == l
 }
 
 func filterScrabbleValue(word string, args ...interface{}) bool {
-	return getScrabbleValue(word) == args[0]
+	p := args[0].(interface{})
+	l := p.([]interface{})[0]
+	return getScrabbleValue(word) == l
 }
 
 func filterDuplicateLetters(word string, args ...interface{}) bool {

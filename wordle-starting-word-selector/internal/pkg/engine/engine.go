@@ -78,7 +78,7 @@ func Engine(length int, scrabbleValue int, fullList bool, filterDuplicates bool)
 	}
 
 	if filterDuplicates {
-		words = words.filter(filterDuplicateLetters)
+		words = words.filter(filterDuplicateLetters, 0)
 	}
 
 	if fullList {
@@ -123,9 +123,9 @@ func getWord(words Words) (word string, err error) {
 	return words[rand.Intn(len(words))], nil
 }
 
-func (w Words) filter(check func(word string, args ...interface{}) bool, args ...interface{}) (filteredWords Words) {
+func (w Words) filter(check func(word string, value int) bool, value int) (filteredWords Words) {
 	for _, word := range w {
-		if check(word, args) {
+		if check(word, value) {
 			filteredWords = append(filteredWords, word)
 		}
 	}
@@ -133,15 +133,15 @@ func (w Words) filter(check func(word string, args ...interface{}) bool, args ..
 	return
 }
 
-func filterLength(word string, args ...interface{}) bool {
-	return len(word) == args[0]
+func filterLength(word string, length int) bool {
+	return len(word) == length
 }
 
-func filterScrabbleValue(word string, args ...interface{}) bool {
-	return getScrabbleValue(word) == args[0]
+func filterScrabbleValue(word string, scrabbleValue int) bool {
+	return getScrabbleValue(word) == scrabbleValue
 }
 
-func filterDuplicateLetters(word string, args ...interface{}) bool {
+func filterDuplicateLetters(word string, none int) bool {
 	for i, testingChar := range word {
 		for j, char := range word {
 			if (i != j) && (char == testingChar) {

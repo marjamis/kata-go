@@ -73,26 +73,26 @@ func TestFilterDuplicateLetters(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		assert.Equal(t, test.expected, filterDuplicateLetters(test.word))
+		assert.Equal(t, test.expected, filterDuplicateLetters(test.word, 0))
 	}
 }
 
 func TestFilter(t *testing.T) {
 	t.Run("All true", func(t *testing.T) {
-		trueCheck := func(word string, args ...interface{}) bool {
+		trueCheck := func(word string, value int) bool {
 			return true
 		}
 		words := defaultTestingDictionary
-		filteredWords := words.filter(trueCheck)
+		filteredWords := words.filter(trueCheck, 0)
 		assert.ElementsMatch(t, defaultTestingDictionary, filteredWords)
 	})
 
 	t.Run("All false", func(t *testing.T) {
-		falseCheck := func(word string, args ...interface{}) bool {
+		falseCheck := func(word string, value int) bool {
 			return false
 		}
 		words := defaultTestingDictionary
-		filteredWords := words.filter(falseCheck)
+		filteredWords := words.filter(falseCheck, 0)
 		assert.ElementsMatch(t, Words{}, filteredWords)
 	})
 }

@@ -1,0 +1,10 @@
+go 1.18
+
+use (
+	./MonteCarlo-MontyHall
+	./chase
+	./dijkstra
+	./gorilla-mux
+	./sword-simulation
+	./wordle-starting-word-selector
+)

@@ -48,8 +48,8 @@ var (
 // all the way down to a subset after all the filters are run
 type Words []string
 
-func openDictionaryFile() {
-	fdata, _ := os.Open("configs/dictionary.txt")
+func openDictionaryFile(dictionary string) {
+	fdata, _ := os.Open(dictionary)
 	defer fdata.Close()
 
 	strings := []string{}
@@ -63,8 +63,8 @@ func openDictionaryFile() {
 }
 
 // Engine is the workflow controller for finding a good starting word
-func Engine(length int, scrabbleValue int, fullList bool, filterDuplicates bool) {
-	openDictionaryFile()
+func Engine(length int, scrabbleValue int, fullList bool, filterDuplicates bool, dictionary string) {
+	openDictionaryFile(dictionary)
 	words := words
 
 	// -1 is the cobra flag default to indicate any length

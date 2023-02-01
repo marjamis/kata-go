@@ -21,6 +21,7 @@ var rootCmd = &cobra.Command{
 
 func createSubCommands() {
 	for category, categoryExamples := range example.GetCategories() {
+		specificCategory := category
 		// Adds a subcommand to root for each category
 		categoryCommand := &cobra.Command{
 			Use:   category,
@@ -36,7 +37,7 @@ func createSubCommands() {
 				Short: categoryExample.Description,
 				Long:  categoryExample.Description,
 				Run: func(cmd *cobra.Command, args []string) {
-					formatting.PrintCategory(category)
+					formatting.PrintCategory(specificCategory)
 					formatting.PrintExampleOutput(categoryExample.Description, categoryExample.Function)
 				},
 			})
@@ -47,8 +48,8 @@ func createSubCommands() {
 			Short: "Run through each example in the category",
 			Long:  "Run through each example in the category",
 			Run: func(cmd *cobra.Command, args []string) {
-				formatting.PrintCategory(category)
-				for _, functions := range example.GetCategories()[category] {
+				formatting.PrintCategory(specificCategory)
+				for _, functions := range example.GetCategories()[specificCategory] {
 					formatting.PrintExampleOutput(functions.Description, functions.Function)
 				}
 			},

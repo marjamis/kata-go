@@ -1,8 +1,10 @@
 package example
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 func helloWorld(w http.ResponseWriter, r *http.Request) {
@@ -23,12 +25,24 @@ func goodbye(w http.ResponseWriter, r *http.Request) {
 func runWebserver() {
 	http.HandleFunc("/", helloWorld)
 	http.HandleFunc("/goodbye", goodbye)
-	http.ListenAndServe(":8000", nil)
+	go http.ListenAndServe(":8000", nil)
+
+	seconds := time.Duration(20)
+	fmt.Printf("Webserver open on port localhost:8000. And will be continue to run for: %d seconds\n", seconds)
+
+	for i := seconds; i >= 0; i-- {
+		fmt.Printf("%d second/s left...\n", i)
+		time.Sleep(time.Second)
+	}
+	fmt.Println("Webserver stopping...")
 }
 
 func init() {
-	examples := runs{
-		{"Basic Webserver", runWebserver},
-	}
-	GetMyExamples().Add("webserver", examples.runExamples)
+	category := GetCategories().AddCategory("webserver")
+
+	category.AddExample("basic",
+		CategoryExample{
+			Description: "Basic Webserver",
+			Function:    runWebserver,
+		})
 }

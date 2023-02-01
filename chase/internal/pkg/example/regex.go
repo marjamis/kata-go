@@ -12,8 +12,11 @@ func regexpRun() {
 }
 
 func init() {
-	examples := runs{
-		{"FindStringSubmatch", regexpRun},
-	}
-	GetMyExamples().Add("regex", examples.runExamples)
+	category := GetCategories().AddCategory("regex")
+
+	category.AddExample("submatch",
+		CategoryExample{
+			Description: "Find string submatch",
+			Function:    stringsRun,
+		})
 }

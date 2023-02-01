@@ -95,11 +95,26 @@ func structs() {
 }
 
 func init() {
-	examples := runs{
-		{"Appending with slices", appending},
-		{"Arrays", arrays},
-		{"Arrays & slices with custom types", structs},
-		{"Ranges with slices ", ranges},
-	}
-	GetMyExamples().Add("arrays", examples.runExamples)
+	category := GetCategories().AddCategory("slices")
+
+	category.AddExample("appending",
+		CategoryExample{
+			Description: "Appending with slices",
+			Function:    appending,
+		})
+	category.AddExample("arrays",
+		CategoryExample{
+			Description: "Arrays",
+			Function:    arrays,
+		})
+	category.AddExample("structs",
+		CategoryExample{
+			Description: "Arrays & slices with custom types",
+			Function:    structs,
+		})
+	category.AddExample("ranges",
+		CategoryExample{
+			Description: "Ranges with slices",
+			Function:    ranges,
+		})
 }

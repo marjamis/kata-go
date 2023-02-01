@@ -78,8 +78,11 @@ func interfaceRun() {
 }
 
 func init() {
-	examples := runs{
-		{"Example Interfaces", interfaceRun},
-	}
-	GetMyExamples().Add("interfaces", examples.runExamples)
+	category := GetCategories().AddCategory("interfaces")
+
+	category.AddExample("basic",
+		CategoryExample{
+			Description: "Basic Example Interfaces",
+			Function:    interfaceRun,
+		})
 }

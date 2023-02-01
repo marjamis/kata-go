@@ -77,11 +77,26 @@ func recursiveFunction() {
 }
 
 func init() {
-	examples := runs{
-		{"Anonymous Function", anonymous},
-		{"Clousure", closures},
-		{"Nested Function", nestedFunction},
-		{"Recursive Function", recursiveFunction},
-	}
-	GetMyExamples().Add("closures", examples.runExamples)
+	category := GetCategories().AddCategory("closures")
+
+	category.AddExample("anonymous",
+		CategoryExample{
+			Description: "Using anonymous functions",
+			Function:    anonymous,
+		})
+	category.AddExample("closures",
+		CategoryExample{
+			Description: "Using closures",
+			Function:    closures,
+		})
+	category.AddExample("nested",
+		CategoryExample{
+			Description: "Nested Functions",
+			Function:    nestedFunction,
+		})
+	category.AddExample("recursive",
+		CategoryExample{
+			Description: "Using recursive functions",
+			Function:    recursiveFunction,
+		})
 }

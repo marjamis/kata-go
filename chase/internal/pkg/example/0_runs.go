@@ -1,44 +1,42 @@
 package example
 
-// This file is named as it is to ensure it's init is run first and allows the myExamples map to be available within the package
-
-import "github.com/marjamis/kata-go/pkg/formatting"
+// This file is named as it is to ensure it's init is run first and allows the categories map to be available within the package
 
 var (
 	// MyExamples is used by the chase binary to auto-discover what subcommands to make
-	myExamples ExamplesMap
+	categories Categories
 )
 
-// ExamplesMap is a custom type used for tracking an examples description and function
-type ExamplesMap map[string]func()
-
-// runDetails contains the requirements of an example for it to be automatically registered to the chase CLI
-type runDetails struct {
+// CategoryExample is the details for a specific example within a category
+type CategoryExample struct {
 	Description string
 	Function    func()
 }
 
-// runs is a custom type for an array of ExampleDetails which contain related data
-type runs []runDetails
+// Category is a custom type used for tracking an examples description and function
+type Category map[string]CategoryExample
 
-// GetMyExamples returns the map of examples for use by the chase cli
-func GetMyExamples() ExamplesMap {
-	return myExamples
+// Categories is one or more Category objects
+type Categories map[string]Category
+
+// GetCategories returns the map of examples for use by the chase cli
+func GetCategories() Categories {
+	return categories
 }
 
-// Add will add additional keys and functions to the myExamples map
-func (ex ExamplesMap) Add(name string, funct func()) {
-	ex[name] = funct
+// AddCategory will add additional category keys
+func (cats Categories) AddCategory(name string) Category {
+	cats[name] = Category{}
+
+	return cats[name]
+}
+
+// AddExample will add an example to a specific category
+func (cat Category) AddExample(exampleKey string, exampleDetails CategoryExample) {
+	cat[exampleKey] = exampleDetails
 }
 
 func init() {
-	// Initialise the variable with some space to be used
-	myExamples = make(ExamplesMap)
-}
-
-// runExamples will loop through the map it's used against and execute ExampleWrapper() to have a pretty output of the example run
-func (er runs) runExamples() {
-	for _, v := range er {
-		formatting.ExampleWrapper(v.Description, v.Function)
-	}
+	// Initialise the variable to be used
+	categories = make(Categories)
 }

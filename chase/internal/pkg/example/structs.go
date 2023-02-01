@@ -44,9 +44,16 @@ func copyReference() {
 }
 
 func init() {
-	examples := runs{
-		{"Accessing values of a struct", structValues},
-		{"To make a copy or point to the same data", copyReference},
-	}
-	GetMyExamples().Add("structs", examples.runExamples)
+	category := GetCategories().AddCategory("structs")
+
+	category.AddExample("using",
+		CategoryExample{
+			Description: "Accessing values of a struct",
+			Function:    structValues,
+		})
+	category.AddExample("copying",
+		CategoryExample{
+			Description: "To make a copy or point to the same data",
+			Function:    copyReference,
+		})
 }

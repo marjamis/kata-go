@@ -26,8 +26,11 @@ func sqrtRun() {
 }
 
 func init() {
-	examples := runs{
-		{"Finding a square root?", sqrtRun},
-	}
-	GetMyExamples().Add("flow_control", examples.runExamples)
+	category := GetCategories().AddCategory("flow_control")
+
+	category.AddExample("square_root",
+		CategoryExample{
+			Description: "Finding a square root?",
+			Function:    sqrtRun,
+		})
 }

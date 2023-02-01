@@ -29,8 +29,11 @@ func stringsRun() {
 }
 
 func init() {
-	examples := runs{
-		{"Showing off some basic string manipulation", stringsRun},
-	}
-	GetMyExamples().Add("strings", examples.runExamples)
+	category := GetCategories().AddCategory("strings")
+
+	category.AddExample("basic",
+		CategoryExample{
+			Description: "Showing off some basic string manipulation",
+			Function:    stringsRun,
+		})
 }

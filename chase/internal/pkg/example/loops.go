@@ -83,11 +83,26 @@ func mapLoop() {
 }
 
 func init() {
-	examples := runs{
-		{"Normal count loop", countLoop},
-		{"Infinite Loop", infiniteLoop},
-		{"Arrays", arrayLoop},
-		{"Map i.e. Hash Table", mapLoop},
-	}
-	GetMyExamples().Add("loops", examples.runExamples)
+	category := GetCategories().AddCategory("loops")
+
+	category.AddExample("count",
+		CategoryExample{
+			Description: "Normal count loop",
+			Function:    countLoop,
+		})
+	category.AddExample("infinite",
+		CategoryExample{
+			Description: "Infinite loop",
+			Function:    infiniteLoop,
+		})
+	category.AddExample("array",
+		CategoryExample{
+			Description: "Array loop",
+			Function:    arrayLoop,
+		})
+	category.AddExample("map",
+		CategoryExample{
+			Description: "Map i.e. Hash Table Loop",
+			Function:    mapLoop,
+		})
 }

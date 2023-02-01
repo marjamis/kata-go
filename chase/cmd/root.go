@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/marjamis/kata-go/chase/internal/pkg/example"
+	"github.com/marjamis/kata-go/chase/internal/pkg/formatting"
 
 	"github.com/spf13/cobra"
 )
@@ -18,25 +19,54 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-func subCommands() {
-	for subCommandName, subCommandFunction := range example.GetMyExamples() {
-		// Required to ensure the function for each subcommand isn't overridden and always points to it's own function specifically
-		subcommandFunction := subCommandFunction
-		rootCmd.AddCommand(&cobra.Command{
-			Use: subCommandName,
+func createSubCommands() {
+	for category, categoryExamples := range example.GetCategories() {
+		// Adds a subcommand to root for each category
+		categoryCommand := &cobra.Command{
+			Use:   category,
+			Short: "Category specific examples",
+			Long:  "Category specific examples",
+		}
+		rootCmd.AddCommand(categoryCommand)
+
+		// Loops through each example in a category to make subcommands of the category subcommand for specific examples
+		for categoryExampleKey, categoryExample := range categoryExamples {
+			categoryCommand.AddCommand(&cobra.Command{
+				Use:   categoryExampleKey,
+				Short: categoryExample.Description,
+				Long:  categoryExample.Description,
+				Run: func(cmd *cobra.Command, args []string) {
+					formatting.PrintCategory(category)
+					formatting.PrintExampleOutput(categoryExample.Description, categoryExample.Function)
+				},
+			})
+		}
+
+		categoryCommand.AddCommand(&cobra.Command{
+			Use:   "all",
+			Short: "Run through each example in the category",
+			Long:  "Run through each example in the category",
 			Run: func(cmd *cobra.Command, args []string) {
-				subcommandFunction()
+				formatting.PrintCategory(category)
+				for _, functions := range example.GetCategories()[category] {
+					formatting.PrintExampleOutput(functions.Description, functions.Function)
+				}
 			},
 		})
 	}
 
-	// Add a special subCommand "all" which will run through all the examples at the one time
+	// Add a special subCommand "all" which will run through all the examples one at a time
 	rootCmd.AddCommand(&cobra.Command{
-		Use: "all",
+		Use:   "all",
+		Short: "Run through each example in each category",
+		Long:  "Run through each example in each category",
 		Run: func(cmd *cobra.Command, args []string) {
 			// Note: order isn't consistent as it loops through a map. For now this is fine but may want to sort the keys first
-			for _, subCommandFunction := range example.GetMyExamples() {
-				subCommandFunction()
+			for category, categories := range example.GetCategories() {
+				formatting.PrintCategory(category)
+				for _, functions := range categories {
+					formatting.PrintExampleOutput(functions.Description, functions.Function)
+				}
 			}
 		},
 	})
@@ -51,5 +81,5 @@ func Execute() {
 }
 
 func init() {
-	subCommands()
+	createSubCommands()
 }

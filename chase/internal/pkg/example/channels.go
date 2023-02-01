@@ -144,12 +144,31 @@ func unbuffered() {
 }
 
 func init() {
-	examples := runs{
-		{"Basic buffered channel example", buffered},
-		{"Basic unbuffered channel example", unbuffered},
-		{"Passing messages between functions", passingMessages},
-		{"Channel synchronising i.e. waiting to exit", channelSynchronising},
-		{"URL Speed Testing", urlSpeedTesting},
-	}
-	GetMyExamples().Add("channels", examples.runExamples)
+	category := GetCategories().AddCategory("channels")
+
+	category.AddExample("buffered",
+		CategoryExample{
+			Description: "Basic buffered channel example",
+			Function:    buffered,
+		})
+	category.AddExample("unbuffered",
+		CategoryExample{
+			Description: "Basic unbuffered channel example",
+			Function:    unbuffered,
+		})
+	category.AddExample("passingMessages",
+		CategoryExample{
+			Description: "Passing messages between functions",
+			Function:    passingMessages,
+		})
+	category.AddExample("syncing",
+		CategoryExample{
+			Description: "Channel synchronising i.e. waiting to exit",
+			Function:    channelSynchronising,
+		})
+	category.AddExample("urls",
+		CategoryExample{
+			Description: "URL Speed Testing",
+			Function:    urlSpeedTesting,
+		})
 }

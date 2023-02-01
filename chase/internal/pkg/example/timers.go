@@ -27,8 +27,11 @@ func timer() {
 }
 
 func init() {
-	examples := runs{
-		{"Basic timer that is set and fires and an additional timer which is stopped", timer},
-	}
-	GetMyExamples().Add("timers", examples.runExamples)
+	category := GetCategories().AddCategory("timers")
+
+	category.AddExample("basic",
+		CategoryExample{
+			Description: "Basic timer that is set and fires and an additional timer which is stopped",
+			Function:    timer,
+		})
 }

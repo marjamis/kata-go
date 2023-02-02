@@ -63,7 +63,7 @@ func openDictionaryFile(dictionary string) {
 }
 
 // Engine is the workflow controller for finding a good starting word
-func Engine(length int, scrabbleValue int, fullList bool, filterDuplicates bool, dictionary string) {
+func Engine(length int, scrabbleValue int, fullList bool, filterDuplicates bool, dictionary string, filterEndingInS bool) {
 	openDictionaryFile(dictionary)
 	words := words
 
@@ -79,6 +79,10 @@ func Engine(length int, scrabbleValue int, fullList bool, filterDuplicates bool,
 
 	if filterDuplicates {
 		words = words.filter(filterDuplicateLetters, 0)
+	}
+
+	if filterEndingInS {
+		words = words.filter(filterWordEndingInS, 0)
 	}
 
 	if fullList {
@@ -151,4 +155,8 @@ func filterDuplicateLetters(word string, none int) bool {
 	}
 
 	return true
+}
+
+func filterWordEndingInS(word string, none int) bool {
+	return word[len(word)-1] != 's'
 }

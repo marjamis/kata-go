@@ -37,6 +37,7 @@ var (
 	fullList         *bool
 	filterDuplicates *bool
 	dictionary       *string
+	filterEndingInS  *bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -44,7 +45,7 @@ var rootCmd = &cobra.Command{
 	Use:   "wsws",
 	Short: "Generates a starting word for wordle",
 	Run: func(cmd *cobra.Command, args []string) {
-		engine.Engine(*length, *scrabbleValue, *fullList, *filterDuplicates, *dictionary)
+		engine.Engine(*length, *scrabbleValue, *fullList, *filterDuplicates, *dictionary, *filterEndingInS)
 	},
 }
 
@@ -61,6 +62,7 @@ func init() {
 	length = rootCmd.Flags().IntP("length", "l", -1, "the length of words to find. -1 means all lengths")
 	scrabbleValue = rootCmd.Flags().IntP("scrabble-value", "s", -1, "the scrabble value of the word to find. -1 means all values")
 	fullList = rootCmd.Flags().BoolP("full-list", "f", false, "set to true to return all available words from filters rather than a random word")
-	filterDuplicates = rootCmd.Flags().BoolP("filter-duplicates", "d", true, "set to true to filter any duplicates letters in a word")
+	filterDuplicates = rootCmd.Flags().BoolP("filter-duplicates", "d", true, "set to true to filter out any duplicates letters in a word")
 	dictionary = rootCmd.Flags().String("dictionary", "configs/wordle_dictionary.txt", "specifies the dictionary to be used in generating words and/or lists")
+	filterEndingInS = rootCmd.Flags().BoolP("filter-ending-with-s", "e", true, "set to true to filter out any words that end with s")
 }

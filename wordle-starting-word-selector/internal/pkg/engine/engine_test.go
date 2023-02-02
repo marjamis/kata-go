@@ -77,6 +77,21 @@ func TestFilterDuplicateLetters(t *testing.T) {
 	}
 }
 
+func TestFilterWordEndingInS(t *testing.T) {
+	tests := []struct {
+		word     string
+		expected bool
+	}{
+		{"blah", true},
+		{"test", true},
+		{"tests", false},
+	}
+
+	for _, test := range tests {
+		assert.Equal(t, test.expected, filterWordEndingInS(test.word, 0))
+	}
+}
+
 func TestFilter(t *testing.T) {
 	t.Run("All true", func(t *testing.T) {
 		trueCheck := func(word string, value int) bool {
